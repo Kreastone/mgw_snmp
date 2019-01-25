@@ -1,0 +1,6 @@
+-sname mgw_snmp
+
+-setcookie mgw_snmp_cookie
+
++K true
++A30

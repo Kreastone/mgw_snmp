@@ -1,0 +1,373 @@
+{deviceSummary, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceSummary">>]]}}.
+{deviceInfoManufacturer, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"Manufacturer">>]]}}.
+{deviceInfoManufacturerOUI, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"ManufacturerOUI">>]]}}.
+{deviceInfoModelName, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"ModelName">>]]}}.
+{deviceInfoDescription, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"Description">>]]}}.
+{deviceInfoSerialNumber, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"SerialNumber">>]]}}.
+{deviceInfoHardwareVersion, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"HardwareVersion">>]]}}.
+{deviceInfoSoftwareVersion, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"SoftwareVersion">>]]}}.
+{deviceInfoProvisioningCode, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"ProvisioningCode">>]]}}.
+{deviceInfoUpTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"UpTime">>]]}}.
+{temperatureSensorNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"TemperatureStatus">>, <<"TemperatureSensorNumberOfEntries">>]]}}.
+
+{tableTemperatureSensor, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"TemperatureStatus">>, <<"TemperatureSensor">>],
+    [{1, index},
+    {2, [<<"Name">>]},
+    {3, [<<"Status">>]},
+    {4, [<<"Value">>]}]]}}.
+
+{managementServerEnableCWMP, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"EnableCWMP">>]]}}.
+{managementServerURL, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"URL">>]]}}.
+{managementServerUsername, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"Username">>]]}}.
+{managementServerPassword, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"Password">>]]}}.
+{managementServerPeriodicInformEnable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"PeriodicInformEnable">>]]}}.
+{managementServerPeriodicInformInterval, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"PeriodicInformInterval">>]]}}.
+{managementServerPeriodicInformTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"PeriodicInformTime">>]]}}.
+{managementServerParameterKey, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"ParameterKey">>]]}}.
+{managementServerConnectionRequestURL, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"ConnectionRequestURL">>]]}}.
+{managementServerConnectionRequestUsername, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"ConnectionRequestUsername">>]]}}.
+{managementServerConnectionRequestPassword, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"ManagementServer">>, <<"ConnectionRequestPassword">>]]}}.
+
+{timeEnable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"Enable">>]]}}.
+{timeStatus, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"Status">>]]}}.
+{timeNTPServer1, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"NTPServer1">>]]}}.
+{timeNTPServer2, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"NTPServer2">>]]}}.
+{timeNTPServer3, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"NTPServer3">>]]}}.
+{timeNTPServer4, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"NTPServer4">>]]}}.
+{timeNTPServer5, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"NTPServer5">>]]}}.
+{timeCurrentLocalTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"CurrentLocalTime">>]]}}.
+{timeLocalTimeZone, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Time">>, <<"LocalTimeZone">>]]}}.
+
+{remoteAccessNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccessNumberOfEntries">>]]}}.
+{remoteAccessAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccess">>]]}}.
+
+{tableRemoteAccess, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccess">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"Port">>]},
+    {4, [<<"SupportedProtocols">>]},
+    {5, [<<"Protocol">>]},
+    {6, [<<"IP">>]},
+    {7, [<<"Mask">>]},
+    {8, [<<"Interface">>]},
+    {9, remove}]]}}.
+
+{layer3DefaultConnectionService, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"DefaultConnectionService">>]]}}.
+{forwardNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"ForwardNumberOfEntries">>]]}}.
+{forwardAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"Forwarding">>]]}}.
+
+{tableForwarding, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"Forwarding">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"Status">>]},
+    {4, [<<"StaticRoute">>]},
+    {5, [<<"DestIPAddress">>]},
+    {6, [<<"DestSubnetMask">>]},
+    {7, [<<"SourceIPAddress">>]},
+    {8, [<<"SourceSubnetMask">>]},
+    {9, [<<"GatewayIPAddress">>]},
+    {10, [<<"Interface">>]},
+    {11, [<<"ForwardingMetric">>]},
+    {12, [<<"MTU">>]},
+    {13, remove}]]}}.
+
+{maxBridgeEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxBridgeEntries">>]]}}.
+{maxDBridgeEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxDBridgeEntries">>]]}}.
+{maxQBridgeEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxQBridgeEntries">>]]}}.
+{maxVLANEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxVLANEntries">>]]}}.
+{bridgeNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"BridgeNumberOfEntries">>]]}}.
+{bridgeAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Bridge">>]]}}.
+
+{tableBridge, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Bridge">>],
+    [{1, [<<"BridgeKey">>]},
+    {2, [<<"BridgeStandard">>]},
+    {3, [<<"BridgeEnable">>]},
+    {4, [<<"BridgeStatus">>]},
+    {5, [<<"BridgeName">>]},
+    {6, [<<"VLANID">>]},
+    {7, remove}]]}}.
+
+{maxFilterEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxFilterEntries">>]]}}.
+{filterNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"FilterNumberOfEntries">>]]}}.
+{filterAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Filter">>]]}}.
+
+{tableFilter, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Filter">>],
+    [{1, [<<"FilterKey">>]},
+    {2, [<<"FilterEnable">>]},
+    {3, [<<"FilterStatus">>]},
+    {4, [<<"FilterBridgeReference">>]},
+    {5, [<<"FilterInterface">>]},
+    {6, [<<"VLANIDFilter">>]},
+    {7, [<<"AdmitOnlyVLANTagged">>]},
+    {8, remove}]]}}.
+
+{maxMarkingEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MaxMarkingEntries">>]]}}.
+{markingNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"MarkingNumberOfEntries">>]]}}.
+{markingAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Marking">>]]}}.
+
+{tableMarking, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Marking">>],
+    [{1, [<<"MarkingKey">>]},
+    {2, [<<"MarkingEnable">>]},
+    {3, [<<"MarkingStatus">>]},
+    {4, [<<"MarkingBridgeReference">>]},
+    {5, [<<"MarkingInterface">>]},
+    {6, [<<"VLANIDUntag">>]},
+    {7, [<<"VLANIDMark">>]},
+    {8, [<<"VLANIDMarkOverride">>]},
+    {9, [<<"EthernetPriorityMark">>]},
+    {10, [<<"EthernetPriorityOverride">>]},
+    {11, remove}]]}}.
+
+{availableInterfaceNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"AvailableInterfaceNumberOfEntries">>]]}}.
+
+{tableAvailableInterface, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"AvailableInterface">>],
+    [{1, [<<"AvailableInterfaceKey">>]},
+    {2, [<<"InterfaceType">>]},
+    {3, [<<"InterfaceReference">>]}]]}}.
+
+{ipPingDiagnosticsState, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"State">>]]}}.
+{ipPingDiagnosticsInterface, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"Interface">>]]}}.
+{ipPingDiagnosticsHost, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"Host">>]]}}.
+{ipPingDiagnosticsNumberOfRepetitions, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"NumberOfRepetitions">>]]}}.
+{ipPingDiagnosticsTimeout, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"Timeout">>]]}}.
+{ipPingDiagnosticsDataBlockSize, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"DataBlockSize">>]]}}.
+{ipPingDiagnosticsDSCP, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"DSCP">>]]}}.
+{ipPingDiagnosticsSuccessCount, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"SuccessCount">>]]}}.
+{ipPingDiagnosticsFailureCount, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"FailureCount">>]]}}.
+{ipPingDiagnosticsAverageResponseTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"AverageResponseTime">>]]}}.
+{ipPingDiagnosticsMinimumResponseTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"MinimumResponseTime">>]]}}.
+{ipPingDiagnosticsMaximumResponseTime, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"IPPingDiagnostics">>, <<"MaximumResponseTime">>]]}}.
+
+{lanHostConfigManagementMACAddress, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"MACAddress">>]]}}.
+{lanHostConfigManagementDHCPServerConfigurable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"DHCPServerConfigurable">>]]}}.
+{lanHostConfigManagementDHCPServerEnable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"DHCPServerEnable">>]]}}.
+{lanHostConfigManagementMinAddress, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"MinAddress">>]]}}.
+{lanHostConfigManagementMaxAddress, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"MaxAddress">>]]}}.
+{lanHostConfigManagementReservedAddress, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"ReservedAddresses">>]]}}.
+{lanHostConfigManagementSubnetMask, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"SubnetMask">>]]}}.
+{lanHostConfigManagementDNSServers, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"DNSServers">>]]}}.
+{lanHostConfigManagementDomainName, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"DomainName">>]]}}.
+{lanHostConfigManagementIPRouters, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPRouters">>]]}}.
+
+{lanHostConfigManagementIPInterfaceNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterfaceNumberOfEntries">>]]}}.
+{lanHostConfigManagementIPInterfaceAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterface">>]]}}.
+{tableLANHostConfigManagementIpInterface, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterface">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"IPInterfaceIPAddress">>]},
+    {4, [<<"IPInterfaceSubnetMask">>]},
+    {5, [<<"IPInterfaceAddressingType">>]},
+    {6, remove}]]}}.
+
+{lanEthernetInterfaceConfigNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANEthernetInterfaceNumberOfEntries">>]]}}.
+{tableLANEthernetInterfaceConfig, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANEthernetInterfaceConfig">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"Status">>]},
+    {4, [<<"Name">>]},
+    {5, [<<"MACAddress">>]},
+    {6, [<<"MACAddressControlEnabled">>]},
+    {7, [<<"MaxBitRate">>]},
+    {8, [<<"DuplexMode">>]},
+    {9, [<<"Stats">>, <<"BytesSent">>]},
+    {10, [<<"Stats">>, <<"BytesReceived">>]},
+    {11, [<<"Stats">>, <<"PacketsSent">>]},
+    {12, [<<"Stats">>, <<"PacketsReceived">>]},
+    {13, [<<"Stats">>, <<"ErrorsSent">>]},
+    {14, [<<"Stats">>, <<"ErrorsReceived">>]},
+    {15, [<<"Stats">>, <<"UnicastPacketsSent">>]},
+    {16, [<<"Stats">>, <<"UnicastPacketsReceived">>]},
+    {17, [<<"Stats">>, <<"DiscardPacketsSent">>]},
+    {18, [<<"Stats">>, <<"DiscardPacketsReceived">>]},
+    {19, [<<"Stats">>, <<"MulticastPacketsSent">>]},
+    {20, [<<"Stats">>, <<"MulticastPacketsReceived">>]},
+    {21, [<<"Stats">>, <<"BroadcastPacketsSent">>]},
+    {22, [<<"Stats">>, <<"BroadcastPacketsReceived">>]},
+    {23, [<<"Stats">>, <<"UnknownProtoPacketsReceived">>]} ]]}}.
+
+{lanDeviceHostsNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"Hosts">>, <<"HostNumberOfEntries">>]]}}.
+{tableLANDeviceHosts, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"Hosts">>, <<"Host">>],
+    [{1, index},
+    {2, [<<"IPAddress">>]},
+    {3, [<<"AddressSource">>]},
+    {4, [<<"LeaseTimeRemaining">>]},
+    {5, [<<"MACAddress">>]},
+    {6, [<<"Layer2Interface">>]},
+    {7, [<<"HostName">>]},
+    {8, [<<"InterfaceType">>]},
+    {9, [<<"Active">>]} ]]}}.
+
+{wanCommonInterfaceConfigEnableForInternet, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"EnabledForInternet">>]]}}.
+{wanCommonInterfaceConfigAccessType, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"WANAccessType">>]]}}.
+{wanCommonInterfaceConfigLayer1UpStreamMaxBitRate, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"Layer1UpstreamMaxBitRate">>]]}}.
+{wanCommonInterfaceConfigLayer1DownStreamMaxBitRate, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"Layer1DownstreamMaxBitRate">>]]}}.
+{wanCommonInterfaceConfigPhysicalLinkStatus, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"PhysicalLinkStatus">>]]}}.
+{wanCommonInterfaceConfigTotalBytesSent, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"TotalBytesSent">>]]}}.
+{wanCommonInterfaceConfigTotalBytesReceived, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"TotalBytesReceived">>]]}}.
+{wanCommonInterfaceConfigTotalPacketsSent, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"TotalPacketsSent">>]]}}.
+{wanCommonInterfaceConfigTotalPacketsReceived, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANCommonInterfaceConfig">>, <<"TotalPacketsReceived">>]]}}.
+
+{wanEthernetInterfaceConfigEnable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANEthernetInterfaceConfig">>, <<"Enable">>]]}}.
+{wanEthernetInterfaceConfigStatus, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANEthernetInterfaceConfig">>, <<"Status">>]]}}.
+{wanEthernetInterfaceConfigMACAddress, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANEthernetInterfaceConfig">>, <<"MACAddress">>]]}}.
+{wanEthernetInterfaceConfigMaxBitRate, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANEthernetInterfaceConfig">>, <<"MaxBitRate">>]]}}.
+{wanEthernetInterfaceConfigDuplexMode, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANEthernetInterfaceConfig">>, <<"DuplexMode">>]]}}.
+
+{wanIPConnectionNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnectionNumberOfEntries">>]]}}.
+{wanIPConnectionAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>]]}}.
+{tableWANIPConnection, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"Reset">>]},
+    {4, [<<"ConnectionStatus">>]},
+    {5, [<<"PossibleConnectionTypes">>]},
+    {6, [<<"ConnectionType">>]},
+    {7, [<<"Name">>]},
+    {8, [<<"Uptime">>]},
+    {9, [<<"LastConnectionError">>]},
+    {10, [<<"RSIPAvailable">>]},
+    {11, [<<"NATEnabled">>]},
+    {12, [<<"AddressingType">>]},
+    {13, [<<"ExternalIPAddress">>]},
+    {14, [<<"SubnetMask">>]},
+    {15, [<<"DefaultGateway">>]},
+    {16, [<<"DNSEnabled">>]},
+    {17, [<<"DNSOverrideAllowed">>]},
+    {18, [<<"DNSServers">>]},
+    {19, [<<"MACAddress">>]},
+    {20, [<<"MACAddressOverride">>]},
+    {21, [<<"ConnectionTrigger">>]},
+    {22, [<<"RouteProtocolRx">>]},
+    {23, [<<"X_RTK_IGMPProxy">>]},
+    {24, [<<"X_RTK_ServiceType">>]},
+    {25, [<<"Stats">>, <<"EthernetBytesSent">>]},
+    {26, [<<"Stats">>, <<"EthernetBytesReceived">>]},
+    {27, [<<"Stats">>, <<"EthernetPacketsSent">>]},
+    {28, [<<"Stats">>, <<"EthernetPacketsReceived">>]},
+    {29, [<<"Stats">>, <<"EthernetErrorsSent">>]},
+    {30, [<<"Stats">>, <<"EthernetErrorsReceived">>]},
+    {31, [<<"Stats">>, <<"EthernetUnicastPacketsSent">>]},
+    {32, [<<"Stats">>, <<"EthernetUnicastPacketsReceived">>]},
+    {33, [<<"Stats">>, <<"EthernetDiscardPacketsSent">>]},
+    {34, [<<"Stats">>, <<"EthernetDiscardPacketsReceived">>]},
+    {35, [<<"Stats">>, <<"EthernetMulticastPacketsSent">>]},
+    {36, [<<"Stats">>, <<"EthernetMulticastPacketsReceived">>]},
+    {37, [<<"Stats">>, <<"EthernetBroadcastPacketsSent">>]},
+    {38, [<<"Stats">>, <<"EthernetBroadcastPacketsReceived">>]},
+    {39, [<<"Stats">>, <<"EthernetUnknownProtoPacketsReceived">>]},
+    {40, [<<"DHCPClient">>, <<"SentDHCPOptionNumberOfEntries">>]},
+    {41, {add, [<<"DHCPClient">>, <<"SentDHCPOption">>]}},
+    {42, [<<"DHCPClient">>, <<"ReqDHCPOptionNumberOfEntries">>]},
+    {43, {add, [<<"DHCPClient">>, <<"ReqDHCPOption">>]}},
+    {44, [<<"PortMappingNumberOfEntries">>]},
+    {45, {add, [<<"PortMapping">>]}},
+    {46, remove} ]]}}.
+
+{tableWANIPConnectionDHCPClientSentDHCPOptions, {snmp_funcs, handle_child_table,
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"DHCPClient">>, <<"SentDHCPOption">>]],
+    [{1, index},
+    {2, parent_index},
+    {3, [<<"Enable">>]},
+    {4, [<<"Tag">>]},
+    {5, [<<"Value">>]},
+    {6, remove}] ]}}.
+
+{tableWANIPConnectionDHCPClientReqDHCPOptions, {snmp_funcs, handle_child_table,
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"DHCPClient">>, <<"ReqDHCPOption">>]],
+    [{1, index},
+    {2, parent_index},
+    {3, [<<"Enable">>]},
+    {4, [<<"Order">>]},
+    {5, [<<"Tag">>]},
+    {6, [<<"Value">>]},
+    {7, remove}] ]}}.
+
+{tableWANIPConnectionPortMapping, {snmp_funcs, handle_child_table,
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"PortMapping">>]],
+    [{1, index},
+    {2, parent_index},
+    {3, [<<"PortMappingEnabled">>]},
+    {4, [<<"PortMappingLeaseDuration">>]},
+    {5, [<<"RemoteHost">>]},
+    {6, [<<"ExternalPort">>]},
+    {7, [<<"InternalPort">>]},
+    {8, [<<"PortMappingProtocol">>]},
+    {9, [<<"InternalClient">>]},
+    {10, [<<"PortMappingDescription">>]},
+    {11, remove}] ]}}.
+
+{wanDevicePPPConnectionNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnectionNumberOfEntries">>]]}}.
+{wanDevicePPPConnectionAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>]]}}.
+{tableWANDevicePPPConnection, {snmp_funcs, handle_table,
+    [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>],
+    [{1, index},
+    {2, [<<"Enable">>]},
+    {3, [<<"Reset">>]},
+    {4, [<<"ConnectionStatus">>]},
+    {5, [<<"PossibleConnectionTypes">>]},
+    {6, [<<"ConnectionType">>]},
+    {7, [<<"PPPoESessionID">>]},
+    {8, [<<"DefaultGateway">>]},
+    {9, [<<"Name">>]},
+    {10, [<<"Uptime">>]},
+    {11, [<<"LastConnectionError">>]},
+    {12, [<<"RSIPAvailable">>]},
+    {13, [<<"NATEnabled">>]},
+    {14, [<<"Username">>]},
+    {15, [<<"Password">>]},
+    {16, [<<"ExternalIPAddress">>]},
+    {17, [<<"DNSEnabled">>]},
+    {18, [<<"DNSOverrideAllowed">>]},
+    {19, [<<"DNSServers">>]},
+    {20, [<<"MACAddress">>]},
+    {21, [<<"MACAddressOverride">>]},
+    {22, [<<"TransportType">>]},
+    {23, [<<"PPPoEACName">>]},
+    {24, [<<"PPPoEServiceName">>]},
+    {25, [<<"ConnectionTrigger">>]},
+    {26, [<<"RouteProtocolRx">>]},
+    {27, [<<"X_RTK_IGMPProxy">>]},
+    {28, [<<"X_RTK_ServiceType">>]},
+    {29, [<<"Stats">>, <<"EthernetBytesSent">>]},
+    {30, [<<"Stats">>, <<"EthernetBytesReceived">>]},
+    {31, [<<"Stats">>, <<"EthernetPacketsSent">>]},
+    {32, [<<"Stats">>, <<"EthernetPacketsReceived">>]},
+    {33, [<<"Stats">>, <<"EthernetErrorsSent">>]},
+    {34, [<<"Stats">>, <<"EthernetErrorsReceived">>]},
+    {35, [<<"Stats">>, <<"EthernetUnicastPacketsSent">>]},
+    {36, [<<"Stats">>, <<"EthernetUnicastPacketsReceived">>]},
+    {37, [<<"Stats">>, <<"EthernetDiscardPacketsSent">>]},
+    {38, [<<"Stats">>, <<"EthernetDiscardPacketsReceived">>]},
+    {39, [<<"Stats">>, <<"EthernetMulticastPacketsSent">>]},
+    {40, [<<"Stats">>, <<"EthernetMulticastPacketsReceived">>]},
+    {41, [<<"Stats">>, <<"EthernetBroadcastPacketsSent">>]},
+    {42, [<<"Stats">>, <<"EthernetBroadcastPacketsReceived">>]},
+    {43, [<<"Stats">>, <<"EthernetUnknownProtoPacketsReceived">>]},
+    {44, [<<"PortMappingNumberOfEntries">>]},
+    {45, {add, [<<"PortMapping">>]}},
+    {46, remove}  ]]}}.
+
+{tableWANPPPConnectionPortMapping, {snmp_funcs, handle_child_table,
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>], [<<"PortMapping">>]],
+    [{1, index},
+    {2, parent_index},
+    {3, [<<"PortMappingEnabled">>]},
+    {4, [<<"PortMappingLeaseDuration">>]},
+    {5, [<<"RemoteHost">>]},
+    {6, [<<"ExternalPort">>]},
+    {7, [<<"InternalPort">>]},
+    {8, [<<"PortMappingProtocol">>]},
+    {9, [<<"InternalClient">>]},
+    {10, [<<"PortMappingDescription">>]},
+    {11, remove}] ]}}.

@@ -1,0 +1,5011 @@
+------------------------------------------------
+
+MINI-MGW        DEFINITIONS ::= BEGIN
+
+IMPORTS
+      enterprises, Integer32, Unsigned32
+        FROM SNMPv2-SMI
+      DisplayString  FROM RFC1213-MIB
+      OBJECT-TYPE    FROM RFC-1212;
+
+------------------------------------------------
+
+Boolean ::= INTEGER { true (1), false (0) }
+
+------------------------------------------------
+
+npoTelecom              OBJECT IDENTIFIER ::= { enterprises 40248 }
+minimgw                 OBJECT IDENTIFIER ::= { npoTelecom 5 }
+internetGatewayDevice   OBJECT IDENTIFIER ::= { minimgw 1 }
+
+------------------------------------------------
+
+deviceSummary OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..1024))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The DeviceSummary parameter is defined to provide an explicit summary of the top-level data model of
+		the device, including version and profile information. This parameter MAY be used by an ACS to discover
+		the nature of the device and the ACS's compatibility with specific objects supported by the device.
+		-
+		The DeviceSummary is defined as a list that includes the Root Object followed by all Service Object
+		instances (or support for a Service Object type if no instances are currently present). For each of these
+		objects, the DeviceSummary specifies the version of the object, the associated instance number used to
+		identify the specific object instance, and a list of the supported profiles for that object."
+    ::= { internetGatewayDevice 1 }
+
+------------------------------------------------
+
+deviceInfo OBJECT IDENTIFIER ::= { internetGatewayDevice 2 }
+
+------------------------------------------------
+
+deviceInfoManufacturer OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The manufacturer of the CPE."
+    ::= { deviceInfo 1 }
+
+------------------------------------------------
+
+deviceInfoManufacturerOUI OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+       "Organizationally unique identifier of the device manufacturer."
+    ::= { deviceInfo 2 }
+
+------------------------------------------------
+
+deviceInfoModelName OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Model name of the CPE."
+    ::= { deviceInfo 3 }
+
+------------------------------------------------
+
+deviceInfoDescription OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "A full description of the CPE device."
+    ::= { deviceInfo 4 }
+
+------------------------------------------------
+
+deviceInfoSerialNumber OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Serial number of the CPE."
+    ::= { deviceInfo 5 }
+
+------------------------------------------------
+
+deviceInfoHardwareVersion OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "A string identifying the particular CPE model and version."
+    ::= { deviceInfo 6 }
+
+------------------------------------------------
+
+deviceInfoSoftwareVersion OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "A string identifying the software version currently installed in the CPE."
+    ::= { deviceInfo 7 }
+
+------------------------------------------------
+
+deviceInfoProvisioningCode OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Identifier of the primary service provider and other provisioning information, which MAY be used
+		by the ACS to determine service provider-specific customization and provisioning parameters"
+    ::= { deviceInfo 8 }
+
+------------------------------------------------
+
+deviceInfoUpTime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Time in seconds since the CPE was last restarted."
+    ::= { deviceInfo 9 }
+
+------------------------------------------------
+
+deviceInfoTemperatureStatus      OBJECT IDENTIFIER 	::= { deviceInfo 10 }
+
+------------------------------------------------
+
+temperatureSensorNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The number of sensors in the device.
+		The number of entries in the TemperatureSensor table"
+    ::= { deviceInfoTemperatureStatus 1 }
+
+------------------------------------------------
+-- TEMPERATURE TABLE
+------------------------------------------------
+
+tableTemperatureSensor OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesTemperature
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "This table represents information that the device has obtained via sampling an internal 
+		temperature sensor."
+    ::= { deviceInfoTemperatureStatus 2 }
+
+--------
+
+entriesTemperatureSensor OBJECT-TYPE
+    SYNTAX  EntriesTemperature
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { temperatureSensorIndex }
+    ::= { tableTemperatureSensor 1 }
+
+--------
+
+EntriesTemperature ::=
+    SEQUENCE
+    {
+        temperatureSensorIndex   Unsigned32,
+        temperatureSensorName    DisplayString,
+        temperatureSensorStatus  DisplayString,
+        temperatureSensorValue   Unsigned32
+    }
+
+------------------------------------------------
+
+temperatureSensorIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique index of this temperature sensor."
+    ::= { entriesTemperatureSensor 1 }
+
+------------------------------------------------
+
+temperatureSensorName OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique name of this temperature sensor."
+    ::= { entriesTemperatureSensor 2 }
+
+------------------------------------------------
+
+temperatureSensorStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The status of this temperature sensor. 
+		Enumeration of:
+		-
+		Disabled (The sensor is not currently sampling the temperature)
+		Enabled (The sensor is currently sampling the temperature)
+		Error (The sensor error currently prevents sampling the temperature)"
+    ::= { entriesTemperatureSensor 3 }
+
+------------------------------------------------
+
+temperatureSensorValue OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "This temperature sensor's last good reading in degrees celsius.
+		A value of -274 (which is below absolute zero) indicates a good reading has not been obtained since last reset."
+    ::= { entriesTemperatureSensor 4 }
+
+------------------------------------------------
+
+managementServer      OBJECT IDENTIFIER ::= { internetGatewayDevice 3 }
+
+------------------------------------------------
+
+managementServerEnableCWMP OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables and disables the CPE's support for CWMP.
+		-
+		false means that CWMP support in the CPE is disabled, in which case the device MUST NOT send any Inform 
+		messages to the ACS or accept any Connection Request notifications from the ACS.
+		true means that CWMP support on the CPE is enabled.
+		-
+		The factory default value MUST be true.
+		The subscriber can re-enable the CPE's CWMP support either by performing a factory reset or by using a 
+		LAN-side protocol to change the value of this parameter back to true."
+    ::= { managementServer 1 }
+
+------------------------------------------------
+
+managementServerURL OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "URL, as defined in [RFC3986], for the CPE to connect to the ACS using the CPE WAN Management Protocol.
+		This parameter MUST be in the form of a valid HTTP or HTTPS URL [RFC2616].
+		The host portion of this URL is used by the CPE for validating the ACS certificate when using SSL or TLS.
+		Note that on a factory reset of the CPE, the value of this parameter might be reset to its factory value. 
+		If an ACS modifies the value of this parameter, it SHOULD be prepared to accommodate the situation that 
+		the original value is restored as the result of a factory reset."
+    ::= { managementServer 2 }
+
+------------------------------------------------
+
+managementServerUsername OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Username used to authenticate the CPE when making a connection to the ACS using the CPE WAN Management Protocol.
+		This username is used only for HTTP-based authentication of the CPE.
+		-
+		Note that on a factory reset of the CPE, the value of this parameter might be reset to its factory value. If an 
+		ACS modifies the value of this parameter, it SHOULD be prepared to accommodate the situation that the original 
+		value is restored as the result of a factory reset."
+    ::= { managementServer 3 }
+
+------------------------------------------------
+
+managementServerPassword OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Password used to authenticate the CPE when making a connection to the ACS using the CPE WAN Management Protocol.
+		This password is used only for HTTP-based authentication of the CPE.
+		Note that on a factory reset of the CPE, the value of this parameter might be reset to its factory value. If an ACS 
+		modifies the value of this parameter, it SHOULD be prepared to accommodate the situation that the original value is 
+		restored as the result of a factory reset.
+		When read, this parameter returns an empty string, regardless of the actual value."
+    ::= { managementServer 4 }
+
+------------------------------------------------
+
+managementServerPeriodicInformEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether or not the CPE MUST periodically send CPE information to the ACS using the Inform method call."
+    ::= { managementServer 5 }
+
+------------------------------------------------
+
+managementServerPeriodicInformInterval OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The duration in seconds of the interval for which the CPE MUST attempt to connect with the ACS and call the Inform 
+		method if PeriodicInformEnable is true."
+    ::= { managementServer 6 }
+
+------------------------------------------------
+
+managementServerPeriodicInformTime OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "An absolute time reference in UTC to determine when the CPE will initiate the periodic Inform method calls. Each 
+		Inform call MUST occur at this reference time plus or minus an integer multiple of the PeriodicInformInterval.
+		PeriodicInformTime is used only to set the phase of the periodic Informs. The actual value of PeriodicInformTime
+		can be arbitrarily far into the past or future. For example, if PeriodicInformInterval is 86400 (a day) and if 
+		PeriodicInformTime is set to UTC midnight on some day (in the past, present, or future) then periodic Informs will 
+		occur every day at UTC midnight. These MUST begin on the very next midnight, even if PeriodicInformTime refers to a
+		day in the future. 
+		-
+		The Unknown Time value defined in [Section 2.2/TR-098a2] indicates that no particular time reference is specified. 
+		That is, the CPE MAY locally choose the time reference, and needs only to adhere to the specified PeriodicInformInterval.
+		If absolute time is not available to the CPE, its periodic Inform behavior MUST be the same as if the PeriodicInformTime 
+		parameter was set to the Unknown Time value."
+    ::= { managementServer 7 }
+	
+------------------------------------------------
+
+managementServerParameterKey OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..32))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "ParameterKey provides the ACS a reliable and extensible means to track changes made by the ACS. The value of 
+		ParameterKey MUST be equal to the value of the ParameterKey argument from the most recent successful SetParameterValues,
+		AddObject, or DeleteObject method call from the ACS.
+		-
+		The CPE MUST set ParameterKey to the value specified in the corresponding method arguments if and only if the method 
+		completes successfully and no fault response is generated. If a method call does not complete successfully (implying 
+		that the changes requested in the method did not take effect), the value of ParameterKey MUST NOT be modified.
+		The CPE MUST only modify the value of ParameterKey as a result of SetParameterValues, AddObject, DeleteObject, or due 
+		to a factory reset. On factory reset, the value of ParameterKey MUST be set to an empty string."
+    ::= { managementServer 8 }
+
+------------------------------------------------
+
+managementServerConnectionRequestURL OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "HTTP URL, as defined in [RFC3986], for an ACS to make a Connection Request notification to the CPE.
+		In the form: http://host:port/path
+		The host portion of the URL MAY be the IP address for the management interface of the CPE in lieu of a host name."
+    ::= { managementServer 9 }
+
+------------------------------------------------
+
+managementServerConnectionRequestUsername OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Username used to authenticate an ACS making a Connection Request to the CPE."
+    ::= { managementServer 10 }
+
+------------------------------------------------
+
+managementServerConnectionRequestPassword OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Password used to authenticate an ACS making a Connection Request to the CPE.
+		When read, this parameter returns an empty string, regardless of the actual value."
+    ::= { managementServer 11 }
+
+------------------------------------------------
+
+time      OBJECT IDENTIFIER ::= { internetGatewayDevice 4 }
+
+------------------------------------------------
+
+timeEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables the NTP or SNTP time client."
+    ::= { time 1 }
+
+------------------------------------------------
+
+timeStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Status of Time support on the CPE. 
+		Enumeration of:
+		-
+		Disabled
+		Unsynchronized
+		Synchronized
+		Error_FailedToSynchronize
+		Error (OPTIONAL)
+		-
+		The Unsynchronized value indicates that the CPE's absolute time has not yet been set.
+		The Synchronized value indicates that the CPE has acquired accurate absolute time; its current time is accurate.
+		The Error_FailedToSynchronize value indicates that the CPE failed to acquire accurate absolute time; its current time is not accurate.
+		The Error value MAY be used by the CPE to indicate a locally defined error condition."
+    ::= { time 2 }
+
+------------------------------------------------
+
+timeNTPServer1 OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "First NTP timeserver. Either a host name or IP address."
+    ::= { time 3 }
+
+------------------------------------------------
+
+timeNTPServer2 OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Second NTP timeserver. Either a host name or IP address."
+    ::= { time 4 }
+
+------------------------------------------------
+
+timeNTPServer3 OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Third NTP timeserver. Either a host name or IP address."
+    ::= { time 5 }
+
+------------------------------------------------
+
+timeNTPServer4 OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Fourth NTP timeserver. Either a host name or IP address."
+    ::= { time 6 }
+
+------------------------------------------------
+
+timeNTPServer5 OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE(0..64))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Fifth NTP timeserver. Either a host name or IP address."
+    ::= { time 7 }
+
+------------------------------------------------
+
+timeCurrentLocalTime OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The current date and time in the CPE's local time zone."
+    ::= { time 8 }
+
+------------------------------------------------
+
+timeLocalTimeZone OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The local time zone offset from UTC, ignoring daylight savings time adjustments, in the form:
+		-
+		+hh:mm
+		-hh:mm
+		-
+		For example, this will always be -08:00 for California, +00:00 or -00:00 for the United Kingdom, and +01:00 for France.
+		This parameter is OBSOLETED because the information that it represents is fully covered by LocalTimeZoneName."
+    ::= { time 9 }
+
+------------------------------------------------
+
+userInterface      OBJECT IDENTIFIER ::= { internetGatewayDevice 5 }
+
+------------------------------------------------
+
+remoteAccessNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The number of entries in the RemoteAccess table"
+    ::= { userInterface 1 }
+	
+------------------------------------------------
+
+remoteAccessAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add entry to the table AccessRemote. New entry has default options."
+    ::= { userInterface 2 }
+
+------------------------------------------------
+-- REMOTE ACCESS TABLE
+------------------------------------------------
+
+tableRemoteAccess OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesRemoteAccess
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "This object contains parameters relating to remotely accessing the CPE's user interface.
+		Remote access is defined as any entity not of a local subnet attempting to connect to the CPE."
+    ::= { userInterface 3 }
+
+--------
+
+entriesRemoteAccess OBJECT-TYPE
+    SYNTAX  EntriesRemoteAccess
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { remoteAccessIndex }
+    ::= { tableRemoteAccess 1 }
+
+--------
+
+EntriesRemoteAccess ::=
+    SEQUENCE
+    {
+		remoteAccessIndex				Unsigned32,
+        remoteAccessEnable              Boolean,
+        remoteAccessPort                Unsigned32,
+        remoteAccessSupportedProtocol   DisplayString,
+        remoteAccessProtocol            DisplayString,
+        remoteAccessIP                  DisplayString,
+        remoteAccessMask                DisplayString,
+        remoteAccessInterface           DisplayString,
+		remoteAccessRemoveEntry			Integer32
+    }
+
+------------------------------------------------
+
+remoteAccessIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for table RemoteAccess"
+    ::= { entriesRemoteAccess 1 }
+
+	
+------------------------------------------------
+
+remoteAccessEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables/Disables remotely accessing the CPE's user interface."
+    ::= { entriesRemoteAccess 2 }
+
+------------------------------------------------
+remoteAccessPort OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Destination TCP port required for remote access connection."
+    ::= { entriesRemoteAccess 3 }
+
+ ------------------------------------------------
+
+remoteAccessSupportedProtocol OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of strings. Indicates the protocols that are supported 
+		by the CPE for the purpose of remotely accessing the user interface. 
+		Each list item is an enumeration of:
+		-
+		HTTP (As defined in [RFC2616])
+		HTTPS (As defined in [RFC2818])
+		TELNET
+		SSH
+		ICMP"
+    ::= { entriesRemoteAccess 4 }
+
+------------------------------------------------
+
+remoteAccessProtocol OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The value MUST be a member of the list reported by the SupportedProtocols parameter.
+		This is the protocol currently being used for remote access."
+    ::= { entriesRemoteAccess 5 }
+
+------------------------------------------------
+
+remoteAccessIP OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      "IP address, i.e. IPv4 address or IPv6 address."
+  ::= { entriesRemoteAccess 6 }
+
+------------------------------------------------
+
+remoteAccessMask OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      "Subnet masks."
+  ::= { entriesRemoteAccess 7 }
+
+------------------------------------------------
+
+remoteAccessInterface OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      "User interface."
+  ::= { entriesRemoteAccess 8 }
+
+------------------------------------------------
+
+remoteAccessRemoveEntry OBJECT-TYPE
+  SYNTAX  Integer32
+  ACCESS  write-only
+  STATUS  mandatory
+  DESCRIPTION
+      "Write any number to remove entry to the table AccessRemote."
+  ::= { entriesRemoteAccess 9 }
+
+------------------------------------------------
+
+layer3      OBJECT IDENTIFIER ::= { internetGatewayDevice 6 }
+
+------------------------------------------------
+
+layer3DefaultConnectionService OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      "Specifies the default WAN interface. The content is the full hierarchical parameter 
+	  name of the default layer 3 connection object."
+  ::= { layer3 1 }
+
+------------------------------------------------
+
+forwardNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of forwarding instances."
+    ::= { layer3 2 }
+	
+------------------------------------------------
+
+forwardAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to the table Forwarding."
+    ::= { layer3 3 }
+
+------------------------------------------------
+-- FORWARDING TABLE
+------------------------------------------------
+
+tableForwarding OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesForwarding
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Layer 3 forwarding table.
+		-
+		In addition to statically configured routes, this table MUST include dynamic routes 
+		learned through layer 3 routing protocols, including RIP, OSPF, DHCP, and IPCP. The 
+		CPE MAY reject attempts to delete or modify a dynamic route entry.
+		-
+		For each incoming packet, the layer 3 forwarding decision is conceptually made as follows:
+		*
+		* Only table entries with a matching ForwardingPolicy are considered, i.e. those that either 
+		do not specify a ForwardingPolicy, or else specify a ForwardingPolicy that matches that of 
+		the incoming packet.
+		*
+		* For the remaining table entries, those for which the source address/mask matches are sorted 
+		by longest prefix, i.e. with the most specific networks first (an unspecified source address 
+		is a wild-card and always matches, with a prefix length of zero).
+		*
+		* For the remaining table entries, those for which the destination address/mask matches are 
+		sorted by longest prefix, i.e. with the most specific networks first (an unspecified 
+		destination address is a wild-card and always matches, with a prefix length of zero).
+		*	
+		* The first of the remaining table entries is applied to the packet.
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with 
+		a given value for Alias. On creation of a new table entry, the Agent MUST choose an initial
+		value for Alias such that the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with all the same values for DestIPAddress,
+		DestSubnetMask, SourceIPAddress and SourceSubnetMask."
+    ::= { layer3 4 }
+
+--------
+
+entriesForwarding OBJECT-TYPE
+    SYNTAX  EntriesForwarding
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { forwardingIndex }
+    ::= { tableForwarding 1 }
+
+--------
+
+EntriesForwarding ::=
+    SEQUENCE
+    {
+		forwardingIndex				Unsigned32,
+        forwardingEnable            Boolean,
+        forwardingStatus            DisplayString,
+        forwardingStaticRoute       Boolean,
+        forwardingDestIPAddress     DisplayString,
+        forwardingDestSubnetMask    DisplayString,
+        forwardingSourceIPAddress   DisplayString,
+        forwardingSourceSubnetMask  DisplayString,
+        forwardingGatewayIPAddress  DisplayString,
+        forwardingInterface         DisplayString,
+        forwardingForwardingMetric  Integer32,
+        forwardingMTU               Unsigned32,
+		forwardingRemoveEntry		Integer32
+    }
+
+------------------------------------------------
+
+forwardingIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for table Forwarding "
+    ::= { entriesForwarding 1 }
+	
+------------------------------------------------
+
+forwardingEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables the forwarding entry. On creation, an entry is disabled by default."
+    ::= { entriesForwarding 2 }
+
+------------------------------------------------
+
+forwardingStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates the status of the forwarding entry. Enumeration of:
+		-
+		Disabled
+		Enabled
+		Error (OPTIONAL)
+		-
+		The Error value MAY be used by the CPE to indicate a locally defined error condition."
+    ::= { entriesForwarding 3 }
+
+------------------------------------------------
+
+forwardingStaticRoute OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "If true, this route is a Static route."
+    ::= { entriesForwarding 4 }
+
+------------------------------------------------
+
+forwardingDestIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Destination address. An empty string or a value of 0.0.0.0 indicates no destination 
+		address is specified. 
+		-
+		A Forwarding table entry for which DestIPAddress and DestSubnetMask are both an empty 
+		string or 0.0.0.0 is a default route."
+    ::= { entriesForwarding 5 }
+
+------------------------------------------------
+
+forwardingDestSubnetMask OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Destination subnet mask. An empty string or a value of 0.0.0.0 indicates no destination
+		subnet mask is specified.
+		-
+		If a destination subnet mask is specified, the DestSubnetMask is ANDed with the destination 
+		address before comparing with the DestIPAddress. Otherwise, the full destination address 
+		is used as is. A Forwarding table entry for which DestIPAddress and DestSubnetMask are 
+		both an empty string or 0.0.0.0 is a default route."
+    ::= { entriesForwarding 6 }
+
+------------------------------------------------
+
+forwardingSourceIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Source address. An empty string or a value of 0.0.0.0 indicates no source address is specified."
+    ::= { entriesForwarding 7 }
+
+------------------------------------------------
+
+forwardingSourceSubnetMask OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Source subnet mask. An empty string or a value of 0.0.0.0 indicates no source subnet mask 
+		is specified.
+		-		
+		If a source subnet mask is specified, the SourceSubnetMask is ANDed with the source address 
+		before comparing with the SourceIPAddress. Otherwise, the full source address is used as is."
+    ::= { entriesForwarding 8 }
+
+------------------------------------------------
+
+forwardingGatewayIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "IP address of the gateway.
+		-
+		Only one of GatewayIPAddress and Interface SHOULD be configured for a route.
+		-
+		If both are configured, GatewayIPAddress and Interface MUST be consistent with each other."
+    ::= { entriesForwarding 9 }
+
+------------------------------------------------
+
+forwardingInterface OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the egress interface associated with this entry. The value MUST be the Path Name of
+		the layer 3 connection object. 
+		Example: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1.
+		-
+		Only one of GatewayIPAddress and Interface SHOULD be configured for a route.
+		If both are configured, GatewayIPAddress and Interface MUST be consistent with each other.
+		-
+		For a route that was configured by setting GatewayIPAddress but not Interface, read access to 
+		Interface MUST return the full hierarchical parameter name for the route's egress interface."
+    ::= { entriesForwarding 10 }
+
+------------------------------------------------
+
+forwardingForwardingMetric OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Forwarding metric. A value of -1 indicates this metric is not used."
+    ::= { entriesForwarding 11 }
+
+------------------------------------------------
+
+forwardingMTU OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum allowed size of an Ethernet frame for this route."
+    ::= { entriesForwarding 12 }
+
+------------------------------------------------
+
+forwardingRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to remove this entry to the table Forwarding."
+    ::= { entriesForwarding 13 }
+
+------------------------------------------------
+
+layer2      OBJECT IDENTIFIER ::= { internetGatewayDevice 7 }
+
+------------------------------------------------
+
+bridging      OBJECT IDENTIFIER ::= { layer2 1 }
+
+------------------------------------------------
+
+maxBridgeEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of entries available in the Bridge table."
+    ::= { bridging 1 }
+
+------------------------------------------------
+
+maxDBridgeEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of 802.1D [802.1D-2004] entries available in the Bridge table. 
+		A positive value for this parameter implies support for 802.1D.
+		-
+		There is no guarantee that this many 802.1D Bridges can be configured. For example,
+		the CPE might not be able simultaneously to support both 802.1D and 802.1Q Bridges."
+    ::= { bridging 2 }
+
+------------------------------------------------
+
+maxQBridgeEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of 802.1Q [802.1Q-2005] entries available in the Bridge table.
+		A positive value for this parameter implies support for 802.1Q.
+		-
+		There is no guarantee that this many 802.1Q Bridges can be configured. For example,
+		the CPE might not be able simultaneously to support both 802.1D and 802.1Q Bridges."
+    ::= { bridging 3 }
+	
+------------------------------------------------
+	
+maxVLANEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of 802.1Q [802.1Q-2005] VLANs supported per Bridge table entry."
+    ::= { bridging 4 }
+
+------------------------------------------------
+
+bridgeNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+         "Number of bridging instances."
+    ::= { bridging 5 }
+
+------------------------------------------------
+
+bridgeAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to the table Bridging."
+    ::= { bridging 6 }
+
+------------------------------------------------
+-- BRIDGE TABLE
+------------------------------------------------
+
+tableBridge OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesBridge
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Bridge table. Each entry in this table represents a single physical 802.1D [802.1D-2004] 
+		or 802.1Q [802.1Q-2005] bridge.
+		-
+		If the Bridge Port table is supported, it explicitly defines the Bridge's interfaces. 
+		Otherwise, they are implicitly defined via the union of the FilterInterface / MarkingInterface 
+		parameters for all the Filter and Marking table entries that are associated with the Bridge.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with 
+		a given value for Alias. On creation of a new table entry, the Agent MUST choose an initial 
+		value for Alias such that the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with a given value for BridgeKey."
+    ::= { bridging 7 }
+
+--------
+
+entriesBridge OBJECT-TYPE
+    SYNTAX  EntriesBridge
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { bridgeKey }
+    ::= { tableBridge 1 }
+
+--------
+
+EntriesBridge ::=
+    SEQUENCE
+    {
+        bridgeKey       	Unsigned32,
+        bridgeStandart  	DisplayString,
+        bridgeEnable    	Boolean,
+        bridgeStatus    	DisplayString,
+        bridgeName      	DisplayString,
+        bridgeVLANID    	Unsigned32,
+		bridgeRemoveEntry	Integer32
+    }
+
+------------------------------------------------
+
+bridgeKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for each Bridge table entry."
+    ::= { entriesBridge 1 }
+
+------------------------------------------------
+
+bridgeStandart OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Selects the standard supported by this Bridge table entry. 
+		Enumeration of:
+		-
+		802.1D ([802.1D-2004])
+		802.1Q ([802.1Q-2005])"
+    ::= { entriesBridge 2 }
+
+------------------------------------------------
+
+bridgeEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this Bridge table entry."
+    ::= { entriesBridge 3 }
+
+------------------------------------------------
+
+bridgeStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The status of this Bridge table entry. 
+		Enumeration of:
+		-
+		Disabled
+		Enabled
+		Error (OPTIONAL)
+		-
+		The Error value MAY be used by the CPE to indicate a locally defined error condition."
+    ::= { entriesBridge 4 }
+
+------------------------------------------------
+
+bridgeName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Human-readable name for this Bridge table entry."
+    ::= { entriesBridge 5 }
+
+------------------------------------------------
+
+bridgeVLANID OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "For an 802.1D [802.1D-2004] Bridge, which has no concept of VLANs, the value of this parameter 
+		MUST be 0.
+		*
+		For an 802.1Q [802.1Q-2005] Bridge, this is the Bridge's default VLAN ID, i.e. the VLAN ID that 
+		applies to Filter table entries with VLANIDFilter=-1. For an 802.1Q Bridge, the value of this 
+		parameter MUST NOT be 0."
+    ::= { entriesBridge 6 }
+
+------------------------------------------------
+
+bridgeRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to remove this entry to the table Bridging."
+    ::= { entriesBridge 7 }
+
+------------------------------------------------
+
+filter      OBJECT IDENTIFIER ::= { layer2 2 }
+
+------------------------------------------------
+
+maxFilterEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of entries available in the Filter table."
+    ::= { filter 1 }
+
+------------------------------------------------
+	
+filterNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the Filter table."
+    ::= { filter 2 }
+
+------------------------------------------------
+	
+filterAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to the table Filter."
+    ::= { filter 3 }
+
+------------------------------------------------
+-- FILTER TABLE
+------------------------------------------------
+
+tableFilter OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesFilter
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Filter table containing filter entries each of which is associated with one Bridge 
+		as specified by a Bridge table entry.
+		-
+		For both 802.1D [802.1D-2004] and 802.1Q [802.1Q-2005] Bridges, this table is used 
+		for the following:
+		-
+		If the Bridge Port table is not supported, it implicitly specifies the Bridge interfaces 
+		(in collaboration with the Marking table).
+		It specifies destination MAC address classification rules.
+		For an 802.1Q Bridge, this table is also used for the following:
+		-
+		For each VLAN ID, it specifies the interfaces that are in the VLAN's Member Set.
+		If the Bridge Port table is not supported, it specifies the Port VLAN ID (PVID) for each interface.
+		This table also supports several concepts that are not covered by either 802.1D or 802.1Q:
+		-
+		It allows a given packet to be admitted to multiple Bridges.
+		It supports Ethertype and source MAC address classification rules.
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given
+		value for Alias. On creation of a new table entry, the Agent MUST choose an initial value for Alias
+		such that the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with a given value for FilterKey."
+    ::= { filter 4 }
+
+--------
+
+entriesFilter OBJECT-TYPE
+    SYNTAX  EntriesFilter
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { filterKey }
+    ::= { tableFilter 1 }
+
+--------
+
+EntriesFilter ::=
+    SEQUENCE
+    {
+        filterKey               	Unsigned32,
+        filterEnable            	Boolean,
+        filterStatus            	DisplayString,
+        filterBridgeReference   	Integer32,
+        filterInterface         	DisplayString,
+        filterVLANID            	Integer32,
+        filterAdmitOnlyVLANTagged   Boolean,
+        filterRemoveEntry		    Integer32
+    }
+
+------------------------------------------------
+
+filterKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for each Filter table entry."
+    ::= { entriesFilter 1 }
+
+------------------------------------------------
+
+filterEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this Filter table entry."
+    ::= { entriesFilter 2 }
+
+------------------------------------------------
+
+filterStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The status of this Filter table entry. Enumeration of:
+		-
+		Disabled
+		Enabled
+		Error (OPTIONAL)
+		The Error value MAY be used by the CPE to indicate a locally defined error condition.
+		-
+		If the Bridge Port table is supported, but none of its entries correspond to FilterInterface, 
+		or if such an entry exists but is disabled, FilterStatus MUST NOT indicate Enabled.
+		-
+		If the Bridge VLAN table is supported, but none of its entries correspond to VLANIDFilter, or 
+		if such an entry exists but is disabled, FilterStatus MUST NOT indicate Enabled."
+    ::= { entriesFilter 3 }
+
+------------------------------------------------
+
+filterBridgeReference OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The BridgeKey value of the Bridge table entry associated with this Filter. A value of -1 
+		indicates the Filter table entry is not associated with a Bridge (and has no effect)."
+    ::= { entriesFilter 4 }
+
+------------------------------------------------
+
+filterInterface OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The interface or interfaces associated with this Filter table entry. The bridge corresponding 
+		to this Filter table entry is defined to admit packets on ingress to the bridge from the 
+		specified interfaces that meet all of the criteria specified in the Filter table entry. The 
+		following values are defined.
+		-
+		To associate this Filter with a single interface listed in the AvailableInterface table, the 
+		FilterInterface value is set to the value of the corresponding AvailableInterfaceKey.
+		AllInterfaces indicates that this Filter is associated with all LAN and WAN interfaces listed
+		in the AvailableInterface table (all entries of InterfaceType LANInterface or WANInterface). 
+		This value is DEPRECATED because of the configuration complexity it requires.
+		LANInterfaces indicates that this Filter is associated with all LAN interfaces listed in the
+		AvailableInterface table (all entries of InterfaceType LANInterface). This value is DEPRECATED 
+		because of the configuration complexity it requires.
+		WANInterfaces indicates that this Filter is associated with all WAN interfaces listed in the 
+		AvailableInterface table (all entries of InterfaceType WANInterface). This value is DEPRECATED 
+		because of the configuration complexity it requires.
+		An empty string indicates the Filter table entry is not associated with any interface (and has 
+		no effect)"
+    ::= { entriesFilter 5 }
+
+------------------------------------------------
+
+filterVLANID OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The 802.1Q [802.1Q-2005] VLAN ID associated with this Filter table entry.
+		-
+		A value of -1 indicates that the default VLAN ID for the Bridge MUST be used instead (as specified 
+		by InternetGatewayDevice.Layer2Bridging.Bridge.{i}.VLANID for the Bridge table entry associated with 
+		this Filter table entry).
+		-
+		For an 802.1Q bridge, the value of this parameter MUST NOT be 0, and it is interpreted as follows 
+		(more than one condition can apply, e.g. a single Filter table entry might both add an interface to
+		a VLAN's Member Set, and define a classification rule).
+		-
+		If the Bridge Port table is not supported, it is a candidate to be the 802.1Q Port VLAN ID (PVID) for
+		the interface associated with this Filter. Where there is more than one such candidate for a given 
+		interface, the PVID MUST be selected according to the ExclusivityOrder precedence rules.
+		The interface associated with this Filter is added to the VLAN's 802.1Q Member Set.
+		If a classification parameter, e.g. DestMACAddressFilterList, is specified, a classification rule for
+		this VLAN ID is added.
+		For an 802.1D [802.1D-2004] Bridge, which has no concept of VLANs, the VLAN ID MUST be 0. This is most 
+		easily achieved by allowing this parameter to retain its default value of -1 and relying on the fact 
+		that the default VLAN ID for an 802.1D bridge will always be 0."
+    ::= { entriesFilter 6 }
+
+------------------------------------------------
+
+filterAdmitOnlyVLANTagged OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "802.1Q [802.1Q-2005] Acceptable Frame Types criterion.
+		-
+		This parameter is DEPRECATED, because it only partly models 802.1Q Acceptable Frame Types (and Ingress 
+		Filtering). The Bridge Port table SHOULD be used instead and, if supported, MUST take precedence over 
+		this parameter.
+		-
+		If true, the Bridge admits only packets tagged with VLAN IDs that include the ingress interface in their 
+		802.1Q Member Sets.
+		-
+		If false, the Bridge admits both packets tagged with VLAN IDs that include the ingress interface in their 
+		802.1Q Member Sets, and any Untagged or PriorityOnly packets. All Untagged or PriorityOnly packets are 
+		associated on ingress with the interface's Port VLAN ID (PVID).
+		-
+		See the description of VLANIDFilter for an explanation of how the Member Set and PVID are determined.
+		-
+		If more than one Filter table entry is associated with a given interface, the value of AdmitOnlyVLANTagged
+		MUST be the same for all such entries.
+		-
+		For an 802.1D [802.1D-2004] Bridge, which has no concept of VLANs, the value of this parameter MUST be false."
+    ::= { entriesFilter 7 }
+	
+------------------------------------------------
+
+filterRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to remove this entry to the table Filter."
+    ::= { entriesFilter 8 }
+
+------------------------------------------------
+
+marking      OBJECT IDENTIFIER ::= { layer2 3 }
+
+------------------------------------------------
+
+maxMarkingEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum number of entries available in the Marking table."
+    ::= { marking 1 }
+
+------------------------------------------------
+
+markingNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the Marking table."
+    ::= { marking 2 }
+
+------------------------------------------------
+
+markingAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+	STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to the table Marking."
+    ::= { marking 3 }
+	
+------------------------------------------------
+-- Marking TABLE
+------------------------------------------------
+
+tableMarking OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesMarking
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Marking table identifying non-default layer 2 marking behavior for packets on egress 
+		from the specified interfaces.
+		-
+		This table is not relevant to 802.1D [802.1D-2004] Bridges, which are not VLAN-aware.
+		-
+		For 802.1Q [802.1Q-2005] Bridges, this table is used for the following:
+		-
+		It specifies whether VLAN tags are to be removed on egress.
+		This table also supports several concepts that are not covered by 802.1Q:
+		-
+		It allows the VLAN ID to be changed on egress.
+		It allows the Ethernet Priority to be changed on egress.
+		At most one entry in this table (regardless of whether or not it is enabled) can exist 
+		with a given value for Alias. On creation of a new table entry, the Agent MUST choose 
+		an initial value for Alias such that the new entry does not conflict with any existing 
+		entries.
+		-
+		At most one enabled entry in this table can exist with a given value for MarkingKey."
+    ::= { marking 4 }
+
+--------
+
+entriesMarking OBJECT-TYPE
+    SYNTAX  EntriesMarking
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { markingKey }
+    ::= { tableMarking 1 }
+
+--------
+
+EntriesMarking ::=
+    SEQUENCE
+    {
+        markingKey                  		Unsigned32,
+        markingEnable               		Boolean,
+        markingStatus               		DisplayString,
+        markingBridgeReference      		Integer32,
+        markingInterface            		DisplayString,
+        markingVLANIDUntag          		Boolean,
+        markingVLANIDMark           		Integer32,
+        markingVLANIDMarkOverride   		Boolean,
+        markingEthernetPriorityMark        	Integer32,
+        markingEthernetPriorityOverride    	Boolean,
+        markingRemoveEntry    				Integer32
+    }
+
+------------------------------------------------
+
+markingKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for each Marking table entry."
+    ::= { entriesMarking 1 }
+
+------------------------------------------------
+
+markingEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this Marking table entry."
+    ::= { entriesMarking 2 }
+
+------------------------------------------------
+
+markingStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The status of this Marking table entry. Enumeration of:
+		-
+		Disabled
+		Enabled
+		Error (OPTIONAL)
+		The Error value MAY be used by the CPE to indicate a locally defined error condition.
+		-
+		If the Bridge Port table is supported, but none of its entries correspond to MarkingInterface,
+		or if such an entry exists but is disabled, MarkingStatus MUST NOT indicate Enabled."
+    ::= { entriesMarking 3 }
+
+------------------------------------------------
+
+markingBridgeReference OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The BridgeKey value of the Bridge table entry associated with this Marking table entry. A value 
+		of -1 indicates the Marking table entry is not associated with a Bridge (and has no effect).
+		-
+		The effect of a Marking table entry applies only to packets that have been admitted to the 
+		specified bridge (regardless of the ingress interface)."
+    ::= { entriesMarking 4 }
+
+------------------------------------------------
+
+markingInterface OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The interface or interfaces associated with this Marking table entry for which the specified 
+		marking behavior is to apply on egress from the associated bridge. The following values are defined.
+		-
+		To associate this Marking table entry with a single interface listed in the AvailableInterface
+		table, the MarkingInterface value is set to the value of the corresponding AvailableInterfaceKey.
+		AllInterfaces indicates that this Marking table entry is associated with all LAN and WAN interfaces
+		listed in the AvailableInterface table (all entries of InterfaceType LANInterface or WANInterface). 
+		This value is DEPRECATED because of the configuration complexity it requires.
+		LANInterfaces indicates that this Marking table entry is associated with all LAN interfaces listed 
+		in the AvailableInterface table (all entries of InterfaceType LANInterface). This value is DEPRECATED 
+		because of the configuration complexity it requires.
+		WANInterfaces indicates that this Marking table entry is associated with all WAN interfaces listed
+		in the AvailableInterface table (all entries of InterfaceType WANInterface). This value is DEPRECATED 
+		because of the configuration complexity it requires.
+		an empty string indicates the Marking table entry table entry is not associated with any interface 
+		(and has no effect)
+		If there is more than one enabled Marking table entry that specifies one or more of the same interfaces
+		for the same bridge (identical values of MarkingBridgeReference), then for packets on egress from the 
+		specified bridge to those interfaces, the applied marking MUST be that specified in the Marking table 
+		entry among those in conflict with the lowest MarkingKey value.
+		-
+		If an interface in a given bridge does not have a corresponding Marking table entry, the marking is left 
+		unchanged on egress."
+    ::= { entriesMarking 5 }
+
+------------------------------------------------
+
+markingVLANIDUntag OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "If true, on egress to the interfaces associated with this Marking table entry, all packets are sent 
+		Untagged.
+		-
+		If false, on egress to the interfaces associated with this Marking table entry, all packets are sent 
+		Tagged with the VLAN ID of the VLAN in which the packet is being bridged."
+    ::= { entriesMarking 6 }
+
+------------------------------------------------
+
+markingVLANIDMark OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The 802.1Q [802.1Q-2005] VLAN ID to be used on egress to the interfaces associated with this Marking 
+		table entry.
+		-
+		A value of -1 indicates that the VLAN ID of the VLAN in which the packet is being bridged is to be used,
+		i.e. no change.
+		-
+		The value of this parameter MUST NOT be 0.
+		-
+		If VLANIDUntag is true, then no VLAN marking is done since the tag containing the VLAN ID is removed.
+		-
+		Note that 802.1Q does not support re-marking on egress."
+    ::= { entriesMarking 7 }
+
+------------------------------------------------
+
+markingVLANIDMarkOverride OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "If false, on egress to the interfaces associated with this Marking table entry, the VLANIDMark, if 
+		specified, is applied only to PriorityOnly packets.
+		-
+		If true, on egress to the interfaces associated with this Marking table entry, the VLANIDMark, if 
+		specified, is to be applied to all packets on this Bridge.
+		-
+		If VLANIDUntag is true, then no VLAN marking is done since the tag containing the VLAN ID is removed.
+		-
+		Note that 802.1Q [802.1Q-2005] does not support re-marking on egress."
+    ::= { entriesMarking 8 }
+
+------------------------------------------------
+
+markingEthernetPriorityMark OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Ethernet priority code (as defined in 802.1D [802.1D-2004]) to mark traffic with that falls into this
+		Bridge on egress to the interfaces associated with this Marking table entry. A value of -1 indicates no
+		change from the incoming packet or the mark assigned by the classifier.
+		-
+		Note that 802.1Q [802.1Q-2005] does not support re-marking on egress."
+    ::= { entriesMarking 9 }
+
+------------------------------------------------
+
+markingEthernetPriorityOverride OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "If false, on egress to the interfaces associated with this Marking table entry, the EthernetPriorityMark, 
+		if specified, is applied only to packets of priority 0.
+		-
+		If true, on egress to the interfaces associated with this Marking table entry, the EthernetPriorityMark, 
+		if specified, is to be applied to all packets on this Bridge.
+		-
+		Note that 802.1Q [802.1Q-2005] does not support re-marking on egress."
+    ::= { entriesMarking 10 }
+
+------------------------------------------------
+
+markingRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to remove this entry to this table"
+    ::= { entriesMarking 11 }
+	
+------------------------------------------------
+
+availableInterface      OBJECT IDENTIFIER ::= { layer2 4 }
+
+------------------------------------------------
+
+availableInterfaceNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the AvailableInterface table."
+    ::= { availableInterface 1 }
+
+------------------------------------------------
+-- AVAILABLE INTERFACE TABLE
+------------------------------------------------
+
+tableAvailableInterface OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesAvailableInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Table containing all LAN and WAN interfaces that are available to be referenced by the Bridge table. Only interfaces
+		that can carry layer 2 bridged traffic are included.
+		-
+		At most one entry in this table can exist with a given value for AvailableInterfaceKey."
+    ::= { availableInterface 2 }
+
+--------
+
+entriesAvailableInterface OBJECT-TYPE
+    SYNTAX  EntriesAvailableInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { availableInterfaceKey }
+    ::= { tableAvailableInterface 1 }
+
+--------
+
+EntriesAvailableInterface ::=
+    SEQUENCE
+    {
+        availableInterfaceKey                Unsigned32,
+        availableInterfaceType               DisplayString,
+        availableInterfaceReference          DisplayString
+    }
+
+------------------------------------------------
+
+availableInterfaceKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for each Interface entry."
+    ::= { entriesAvailableInterface 1 }
+
+------------------------------------------------
+
+availableInterfaceType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether the interface is a LAN-side or WAN-side interface, or a LAN-side or WAN-side connection to the Gateway's IP router.
+		Enumeration of:
+		-
+		LANInterface
+		WANInterface
+		LANRouterConnection
+		WANRouterConnection"
+    ::= { entriesAvailableInterface 2 }
+
+------------------------------------------------
+
+availableInterfaceReference OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list (maximum list length 256) of strings. Each list item MUST be the Path Name of an available LAN or WAN 
+		interface. If the referenced object is deleted, the corresponding item MUST be removed from the list. This table SHOULD 
+		contain a single entry for each available LAN and WAN interface.
+		-
+		When such an interface is modeled in more than one place within the data model, the value of this parameter MUST include the
+		full hierarchical parameter names of all of the corresponding objects. For example, if a given Ethernet interface is present
+		within two LANDevice instances, the value of this parameter might be: InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig.1,
+		InternetGatewayDevice.LANDevice.2.LANEthernetInterfaceConfig.1
+		-
+		Note that the remainder of the parameter description does not refer to the possibility that the parameter value is a comma-separated 
+		list. Nevertheless, the above requirement does apply.
+		-
+		For a WAN interface, this parameter is the full hierarchical parameter name of a particular WANConnectionDevice. A WANConnectionDevice
+		is considered available (included in this table) only if it supports layer 2 bridged traffic. That is, this table MUST include only 
+		WANConnectionDevices that contain either a WANEthernetLinkConfig object, or that contain a WANDSLLinkConfig object for which the LinkType
+		is EoA. For example: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2
+		For a LAN interface, this parameter is the full hierarchical parameter name of a particular LAN**InterfaceConfig object, or a WLANConfiguration
+		object. This table SHOULD include one entry for each such object. For example: InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig.2
+		For a WAN-side connection to the Gateway's IP router, this parameter is the full hierarchical parameter name of a particular WAN**Connection service. 
+		This table SHOULD include an entry for each layer 3 WAN connection. For example: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1
+		For a LAN-side connection to the Gateway's IP router, this parameter is the full hierarchical parameter name of a particular LANDevice. 
+		This table SHOULD include an entry for each LANDevice, each of which is associated with a LAN-side layer 3 connection to the Gateway's IP router.
+		For example: InternetGatewayDevice.LANDevice.2"
+    ::= { entriesAvailableInterface 3 }
+
+------------------------------------------------
+
+ipPingDiagnostics      OBJECT IDENTIFIER ::= { internetGatewayDevice 8 }
+
+------------------------------------------------
+
+ipPingDiagnosticsState OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates availability of diagnostic data. Enumeration of:
+		-
+		None (READONLY)
+		Requested
+		Complete (READONLY)
+		Error_CannotResolveHostName (READONLY)
+		Error_Internal (READONLY)
+		Error_Other (READONLY)
+		If the ACS sets the value of this parameter to Requested, the CPE MUST initiate the corresponding diagnostic test. When writing, the only allowed
+		value is Requested. To ensure the use of the proper test parameters (the writable parameters in this object), the test parameters MUST be set either
+		prior to or at the same time as (in the same SetParameterValues) setting the DiagnosticsState to Requested.
+		-
+		When requested, the CPE SHOULD wait until after completion of the communication session with the ACS before starting the diagnostic.
+		-
+		When the test is completed, the value of this parameter MUST be either Complete (if the test completed successfully), or one of the Error values listed above.
+		-
+		If the value of this parameter is anything other than Complete, the values of the results parameters for this test are indeterminate.
+		-
+		When the diagnostic initiated by the ACS is completed (successfully or not), the CPE MUST establish a new connection to the ACS to allow the ACS to view
+		the results, indicating the Event code 8 DIAGNOSTICS COMPLETE in the Inform message.
+		-
+		After the diagnostic is complete, the value of all result parameters (all read-only parameters in this object) MUST be retained by the CPE until either 
+		this diagnostic is run again, or the CPE reboots. After a reboot, if the CPE has not retained the result parameters from the most recent test, it MUST 
+		set the value of this parameter to None.
+		-
+		Modifying any of the writable parameters in this object except for this one MUST result in the value of this parameter being set to None.
+		-
+		While the test is in progress, modifying any of the writable parameters in this object except for this one MUST result in the test being terminated and the
+		value of this parameter being set to None.
+		-
+		While the test is in progress, setting this parameter to Requested (and possibly modifying other writable parameters in this object) MUST result in the test 
+		being terminated and then restarted using the current values of the test parameters."
+    ::= { ipPingDiagnostics 1 }
+
+------------------------------------------------
+
+
+ipPingDiagnosticsInterface OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The value MUST be the Path Name of the WAN or LAN IP-layer interface over which the test is to be performed. This identifies the source IP address to use when 
+		performing the test.
+		-
+		The following is a WAN interface example: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection.1
+		-
+		The following is a LAN interface example: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.IPInterface.1
+		-
+		The value of this parameter MUST be either a valid interface or an empty string. An attempt to set this parameter to a different value MUST be rejected as an
+		invalid parameter value.
+		-
+		If an empty string is specified, the CPE MUST use the interface as directed by its routing policy (Forwarding table entries) to determine the appropriate interface."
+    ::= { ipPingDiagnostics 2 }
+
+------------------------------------------------
+
+
+ipPingDiagnosticsHost OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Host name or address of the host to ping."
+    ::= { ipPingDiagnostics 3 }
+
+------------------------------------------------
+
+ipPingDiagnosticsNumberOfRepetitions OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of repetitions of the ping test to perform before reporting the results."
+    ::= { ipPingDiagnostics 4 }
+
+------------------------------------------------
+
+ipPingDiagnosticsTimeout OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Timeout in milliseconds for the ping test."
+    ::= { ipPingDiagnostics 5 }
+
+------------------------------------------------
+
+ipPingDiagnosticsDataBlockSize OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Size of the data block in bytes to be sent for each ping."
+    ::= { ipPingDiagnostics 6 }
+
+------------------------------------------------
+
+ipPingDiagnosticsDSCP OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "DiffServ codepoint to be used for the test packets. By default the CPE SHOULD set this value to zero."
+    ::= { ipPingDiagnostics 7 }
+
+------------------------------------------------
+
+ipPingDiagnosticsSuccessCount OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Result parameter indicating the number of successful pings (those in which a successful response was received prior to the timeout) 
+		in the most recent ping test."
+    ::= { ipPingDiagnostics 8 }
+
+------------------------------------------------
+
+ipPingDiagnosticsFailureCount OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Result parameter indicating the number of failed pings in the most recent ping test."
+    ::= { ipPingDiagnostics 9 }
+
+------------------------------------------------
+
+ipPingDiagnosticsAverageResponseTime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Result parameter indicating the average response time in milliseconds over all repetitions with successful responses of the most recent 
+		ping test. If there were no successful responses, this value MUST be zero."
+    ::= { ipPingDiagnostics 10 }
+
+------------------------------------------------
+
+ipPingDiagnosticsMinimumResponseTime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Result parameter indicating the minimum response time in milliseconds over all repetitions with successful responses of the most recent 
+		ping test. If there were no successful responses, this value MUST be zero."
+    ::= { ipPingDiagnostics 11 }
+
+------------------------------------------------
+
+ipPingDiagnosticsMaximumResponseTime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Result parameter indicating the maximum response time in milliseconds over all repetitions with successful responses of the most recent 
+		ping test. If there were no successful responses, this value MUST be zero."
+    ::= { ipPingDiagnostics 12 }
+	
+------------------------------------------------
+-- LAN DEVICE
+------------------------------------------------
+
+lanDevice      OBJECT IDENTIFIER ::= { internetGatewayDevice 9 }
+
+------------------------------------------------
+
+lanHostConfigManagement      OBJECT IDENTIFIER ::= { lanDevice 1 }
+
+------------------------------------------------
+
+lanHostConfigManagementMACAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The MAC address associated with the IP interface modeled by this LANDevice instance. This is the MAC address that is returned in response to
+		an ARP request for any of the IP interface's IP addresses. It is also the source MAC address in all IP traffic sent over the IP interface.
+		-
+		If no single MAC address meets the above criteria, the value of this parameter MUST be the all-zero MAC address 00:00:00:00:00:00."
+    ::= { lanHostConfigManagement 1 }
+
+------------------------------------------------
+
+lanHostConfigManagementDHCPServerConfigurable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables the configuration of the DHCP server on the LAN interface. If this variable is set to false, the CPE SHOULD restore its default DHCP 
+		server settings."
+    ::= { lanHostConfigManagement 2 }
+
+------------------------------------------------
+
+lanHostConfigManagementDHCPServerEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables the DHCP server on the LAN interface."
+    ::= { lanHostConfigManagement 3 }
+
+------------------------------------------------
+
+lanHostConfigManagementMinAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies first address in the pool to be assigned by the DHCP server on the LAN interface.
+		-
+		This parameter MUST have a valid value before the DHCP server can be enabled."
+    ::= { lanHostConfigManagement 4 }
+
+------------------------------------------------
+
+lanHostConfigManagementMaxAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies last address in the pool to be assigned by the DHCP server on the LAN interface.
+		-
+		This parameter MUST have a valid value before the DHCP server can be enabled."
+    ::= { lanHostConfigManagement 5 }
+
+------------------------------------------------
+
+lanHostConfigManagementReservedAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list (maximum list length 256) of IPAddresses. Addresses marked reserved from the address allocation pool."
+    ::= { lanHostConfigManagement 6 }
+
+------------------------------------------------
+
+lanHostConfigManagementSubnetMask OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the client's network subnet mask.
+		-
+		This parameter MUST have a valid value before the DHCP server can be enabled."
+    ::= { lanHostConfigManagement 7 }
+
+------------------------------------------------
+
+lanHostConfigManagementDNSServers OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list (maximum list length 64) of IPAddresses. DNS servers offered to DHCP clients. Support for more than three 
+		DNS Servers is OPTIONAL."
+    ::= { lanHostConfigManagement 8 }
+
+------------------------------------------------
+
+lanHostConfigManagementDomainName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Sets the domain name to provide to clients on the LAN interface."
+    ::= { lanHostConfigManagement 9 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPRouters OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list (maximum list length 64) of IPAddresses. IP addresses of routers on this subnet. Also known as default gateway.
+		Support for more than one Router address is OPTIONAL."
+    ::= { lanHostConfigManagement 10 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterface      OBJECT IDENTIFIER ::= { lanHostConfigManagement 11 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the LANHostConfigManagementIpInterface table."
+    ::= { lanHostConfigManagementIPInterface 1 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to the tableLANHostConfigManagementIpInterface."
+    ::= { lanHostConfigManagementIPInterface 2 }
+
+------------------------------------------------
+-- LAN IP INTERFACE TABLE
+------------------------------------------------
+
+tableLANHostConfigManagementIpInterface OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesLANHostConfigManagementIpInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "IP address table with each object representing an IP address on the LANDevice IP interface.
+		-
+		Support for more than one interface instance is OPTIONAL.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given value for Alias. On creation of a new 
+		table entry, the Agent MUST choose an initial value for Alias such that the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with the same values for IPInterfaceIPAddress and IPInterfaceSubnetMask."
+    ::= { lanHostConfigManagementIPInterface 3 }
+
+--------
+
+entriesLANHostConfigManagementIpInterface OBJECT-TYPE
+    SYNTAX  EntriesLANHostConfigManagementIpInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { lanHostConfigManagementIPInterfaceKey }
+    ::= { tableLANHostConfigManagementIpInterface 1 }
+
+--------
+
+EntriesLANHostConfigManagementIpInterface ::=
+    SEQUENCE
+    {
+		lanHostConfigManagementIPInterfaceKey				Unsigned32,
+        lanHostConfigManagementIPInterfaceEnable          	Boolean,
+        lanHostConfigManagementIPInterfaceIpAddress       	DisplayString,
+        lanHostConfigManagementIPInterfaceSubnetMask      	DisplayString,
+        lanHostConfigManagementIPInterfaceAddressingType  	DisplayString,
+        lanHostConfigManagementIPInterfaceRemoveEntry	  	Integer32
+    }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key to entry in the table."
+    ::= { entriesLANHostConfigManagementIpInterface 1 }
+	
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this entry. On creation, an entry is disabled by default."
+    ::= { entriesLANHostConfigManagementIpInterface 2 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceIpAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "IP address of the LAN-side interface of the CPE."
+    ::= { entriesLANHostConfigManagementIpInterface 3 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceSubnetMask OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Subnet mask of the LAN-side interface of the IGD."
+    ::= { entriesLANHostConfigManagementIpInterface 4 }
+
+------------------------------------------------
+
+lanHostConfigManagementIPInterfaceAddressingType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Represents the addressing method used to assign the LAN-side IP address of the CPE on this interface. 
+		Enumeration of:
+		-
+		DHCP
+		Static
+		AutoIP"
+    ::= { entriesLANHostConfigManagementIpInterface 5 }
+	
+lanHostConfigManagementIPInterfaceRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to remove this entry to the tableLANHostConfigManagementIpInterface."
+    ::= { entriesLANHostConfigManagementIpInterface 6 }
+
+------------------------------------------------
+
+lanEthernetInterface      OBJECT IDENTIFIER ::= { lanDevice 2 }
+
+------------------------------------------------
+-- LAN Ethernet Interface Config TABLE
+------------------------------------------------
+
+lanEthernetInterfaceConfigNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the LANEthernetInterfaceConfig table."
+    ::= { lanEthernetInterface 1 }
+
+------------------------------------------------
+
+tableLANEthernetInterfaceConfig OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesLANEthernetInterfaceConfig
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "This object models an Ethernet LAN connection on a CPE device. This object MUST be implemented for 
+		CPE that contain an Ethernet interface on the LAN side.
+		-
+		At most one entry in this table can exist with a given value for MACAddress."
+    ::= { lanEthernetInterface 2 }
+
+--------
+
+entriesLANEthernetInterfaceConfig OBJECT-TYPE
+    SYNTAX  EntriesLANEthernetInterfaceConfig
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { lanEthernetInterfaceKey }
+    ::= { tableLANEthernetInterfaceConfig 1 }
+
+--------
+
+EntriesLANEthernetInterfaceConfig ::=
+    SEQUENCE
+    {
+        lanEthernetInterfaceKey      						Unsigned32,
+        lanEthernetInterfaceEnable      					Boolean,
+        lanEthernetInterfaceStatus       					DisplayString,
+        lanEthernetInterfaceName         					DisplayString,
+        lanEthernetInterfaceMACAddress   					DisplayString,
+        lanEthernetInterfaceMACAddressControlEnable 		Boolean,
+        lanEthernetInterfaceMaxBitRate				    	DisplayString,
+        lanEthernetInterfaceDuplexMode   					DisplayString,
+        lanEthernetInterfaceStatsBytesSent              	Unsigned32,
+        lanEthernetInterfaceStatsBytesReceived          	Unsigned32,
+        lanEthernetInterfaceStatsPacketSent             	Unsigned32,
+        lanEthernetInterfaceStatsPacketReceived         	Unsigned32,
+        lanEthernetInterfaceStatsErrorsSent             	Unsigned32,
+        lanEthernetInterfaceStatsErrorsReceived         	Unsigned32,
+        lanEthernetInterfaceStatsUnicastPacketsSent      	Unsigned32,
+        lanEthernetInterfaceStatsUnicastPacketsReceived  	Unsigned32,
+        lanEthernetInterfaceStatsDiscardPacketsSent      	Unsigned32,
+        lanEthernetInterfaceStatsDiscardPacketsReceived  	Unsigned32,
+        lanEthernetInterfaceStatsMulticastPacketsSent    	Unsigned32,
+        lanEthernetInterfaceStatsMulticastPacketsReceived 	Unsigned32,
+        lanEthernetInterfaceStatsBroadcastPacketsSent    	Unsigned32,
+        lanEthernetInterfaceStatsBroadcastPacketsReceived	Unsigned32,
+        lanEthernetInterfaceStatsProtoPacketsReceived    	Unsigned32
+    }
+
+------------------------------------------------
+
+lanEthernetInterfaceKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key to entry in the table."
+    ::= { entriesLANEthernetInterfaceConfig 1 }
+
+------------------------------------------------
+
+lanEthernetInterfaceEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this interface."
+    ::= { entriesLANEthernetInterfaceConfig 2 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates the status of this interface. 
+		Enumeration of:
+		-
+		Up
+		NoLink
+		Error (OPTIONAL)
+		Disabled
+		The Error value MAY be used by the CPE to indicate a locally defined error condition."
+    ::= { entriesLANEthernetInterfaceConfig 3 }
+
+------------------------------------------------
+
+lanEthernetInterfaceName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The name of this layer 2 interface, chosen by the vendor, e.g. eth0 or eth0:1."
+    ::= { entriesLANEthernetInterfaceConfig 4 }
+
+------------------------------------------------
+
+lanEthernetInterfaceMACAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The physical address of the interface."
+    ::= { entriesLANEthernetInterfaceConfig 5 }
+
+------------------------------------------------
+
+lanEthernetInterfaceMACAddressControlEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates whether MAC Address Control is enabled or not on this interface. MAC Address 
+		Control limits the clients that connect to those that match a list of allowed MAC addresses 
+		specified in InternetGatewayDevice.LANDevice.{i}.LANHostConfigManagement.AllowedMACAddresses."
+    ::= { entriesLANEthernetInterfaceConfig 6 }
+
+------------------------------------------------
+
+lanEthernetInterfaceMaxBitRate OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesLANEthernetInterfaceConfig 7 }
+
+------------------------------------------------
+
+lanEthernetInterfaceDuplexMode OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The duplex mode available to this connection. Enumeration of:
+		-
+		Half
+		Full
+		Auto"
+    ::= { entriesLANEthernetInterfaceConfig 8 }
+
+------------------------------------------------
+lanEthernetInterfaceStatsBytesSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of bytes transmitted out of the interface, including framing characters.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 9 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsBytesReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of bytes received on the interface, including framing characters.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 10 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsPacketSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets transmitted out of the interface.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 11 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsPacketReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets which were received on this interface.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 12 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsErrorsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of outbound packets that could not be transmitted because of errors.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 13 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsErrorsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of inbound packets that contained errors preventing them from being deliverable.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 14 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsUnicastPacketsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets requested for transmission which were not addressed to a multicast or 
+		broadcast address, including those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 15 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsUnicastPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of received packets which were not addressed to a multicast or broadcast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 16 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsDiscardPacketsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of outbound packets which were chosen to be discarded even though no errors had 
+		been detected to prevent their being transmitted. One possible reason for discarding such a packet
+		could be to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 17 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsDiscardPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of inbound packets which were chosen to be discarded even though no errors had 
+		been detected to prevent their being deliverable. One possible reason for discarding such a packet
+		could be to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 18 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsMulticastPacketsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets requested for transmission which were addressed to a multicast address,
+		including those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 19 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsMulticastPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of received packets which were addressed to a multicast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 20 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsBroadcastPacketsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets requested for transmission which were addressed to a broadcast address, including 
+		those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted"
+    ::= { entriesLANEthernetInterfaceConfig 21 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsBroadcastPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of received packets which were addressed to a broadcast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 22 }
+
+------------------------------------------------
+
+lanEthernetInterfaceStatsProtoPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The total number of packets received via the interface which were discarded because of an unknown or 
+		unsupported protocol.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+    ::= { entriesLANEthernetInterfaceConfig 23 }
+
+------------------------------------------------
+
+lanDeviceHosts      OBJECT IDENTIFIER ::= { lanDevice 3 }
+
+------------------------------------------------
+
+lanDeviceHostsNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of entries in the Host table."
+    ::= { lanDeviceHosts 1 }
+
+------------------------------------------------
+-- HOSTS TABLE
+------------------------------------------------
+
+tableLANDeviceHosts OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesLANDeviceHosts
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { lanDeviceHosts 2 }
+
+--------
+
+entriesLANDeviceHosts OBJECT-TYPE
+    SYNTAX  EntriesLANDeviceHosts
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { lanDeviceHostsKey }
+    ::= { tableLANDeviceHosts 1 }
+
+--------
+
+EntriesLANDeviceHosts ::=
+    SEQUENCE
+    {
+		lanDeviceHostsKey				 Unsigned32,
+        lanDeviceHostsIPAddress          DisplayString,
+        lanDeviceHostsAddressSource      DisplayString,
+        lanDeviceHostsLeaseTimeRemaining Integer32,
+        lanDeviceHostsMACAddress         DisplayString,
+        lanDeviceHostsLayer2Interface    DisplayString,
+        lanDeviceHostsHostName           DisplayString,
+        lanDeviceHostsInterfaceType      DisplayString,
+        lanDeviceHostsActive             Boolean
+    }
+
+------------------------------------------------
+
+lanDeviceHostsKey OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique key for this table."
+    ::= { entriesLANDeviceHosts 1 }
+------------------------------------------------
+
+lanDeviceHostsIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Current IP Address of the host."
+    ::= { entriesLANDeviceHosts 2 }
+
+------------------------------------------------
+
+lanDeviceHostsAddressSource OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates whether the IP address of the host was allocated by the CPE using DHCP, was assigned
+		to the host statically, or was assigned using automatic IP address allocation.
+		Enumeration of:
+		-
+		DHCP
+		Static
+		AutoIP"
+    ::= { entriesLANDeviceHosts 3 }
+
+------------------------------------------------
+
+lanDeviceHostsLeaseTimeRemaining OBJECT-TYPE
+    SYNTAX  Integer32 (SIZE (-1..9999999))
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "DHCP lease time remaining in seconds. A value of -1 indicates an infinite lease. The value 
+		MUST be 0 (zero) if the AddressSource is not DHCP."
+    ::= { entriesLANDeviceHosts 4 }
+
+------------------------------------------------
+
+lanDeviceHostsMACAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "MAC address of the host."
+    ::= { entriesLANDeviceHosts 5 }
+
+------------------------------------------------
+
+lanDeviceHostsLayer2Interface OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "This parameter is the full hierarchical parameter name of a particular LAN**InterfaceConfig object
+		or a WLANConfiguration object. For example: InternetGatewayDevice.LANDevice.1.LANEthernetInterfaceConfig.2.
+		-
+		In the case of an embedded Ethernet switch, the Layer2Interface parameter references the LANEthernetInterfaceConfig
+		object that corresponds to the switch port the device is connected to (a LANEthernetInterfaceConfig instance for 
+		each switch port).
+		-
+		In the case of an embedded WLAN access point, the Layer2Interface parameter references the WLANConfiguration object
+		that corresponds to the SSID the device is connected to (if the access point supports multiple SSIDs, then each SSID
+		is a separate instance)."
+    ::= { entriesLANDeviceHosts 6 }
+
+------------------------------------------------
+
+lanDeviceHostsHostName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The device's host name or an empty string if unknown."
+    ::= { entriesLANDeviceHosts 7 }
+
+------------------------------------------------
+
+lanDeviceHostsInterfaceType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Type of physical interface through which this host is connected to the CPE. Enumeration of:
+		-
+		Ethernet
+		USB
+		802.11
+		HomePNA
+		HomePlug
+		MoCA
+		Other"
+    ::= { entriesLANDeviceHosts 8 }
+
+------------------------------------------------
+
+lanDeviceHostsActive OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether or not the host is currently present on the LAN. The method of presence detection is a 
+		local matter to the CPE.
+		-
+		The ability to list inactive hosts is OPTIONAL. If the CPE includes inactive hosts in this table,
+		this variable MUST be set to false for each inactive host. The length of time an inactive host 
+		remains listed in this table is a local matter to the CPE."
+    ::= { entriesLANDeviceHosts 9 }
+
+------------------------------------------------
+
+wanDevice      OBJECT IDENTIFIER ::= { internetGatewayDevice 10 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfig    OBJECT IDENTIFIER ::= { wanDevice 1 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigEnableForInternet OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Used to enable or disable access to and from the Internet across all connection instances."
+    ::= { wanCommonInterfaceConfig 1 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigAccessType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the WAN access (modem) type. 
+		Enumeration of:
+		-
+		DSL
+		Ethernet
+		POTS"
+    ::= { wanCommonInterfaceConfig 2 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigLayer1UpStreamMaxBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the maximum upstream theoretical bit rate for the WAN device in bits per second. This describes
+		the maximum possible rate given the type of interface assuming the best-case operating environment, regardless
+		of the current operating rate.
+		-
+		For example, if the physical interface is 100BaseT, this value would be 100000000, regardless of the current
+		operating rate."
+    ::= { wanCommonInterfaceConfig 3 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigLayer1DownStreamMaxBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the maximum downstream theoretical bit rate for the WAN device in bits per second. This describes 
+		the maximum possible rate given the type of interface assuming the best-case operating environment, regardless
+		of the current operating rate.
+		-
+		For example, if the physical interface is 100BaseT, this value would be 100000000, regardless of the current
+		operating rate."
+    ::= { wanCommonInterfaceConfig 4 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigPhysicalLinkStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates the state of the physical connection (link) from WANDevice to a connected entity. Enumeration of:
+		-
+		Up
+		Down
+		Initializing
+		Unavailable"
+    ::= { wanCommonInterfaceConfig 5 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigTotalBytesSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The cumulative counter for total number of bytes sent upstream across all connection service instances on 
+		the WAN device."
+    ::= { wanCommonInterfaceConfig 6 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigTotalBytesReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The cumulative counter for total number of bytes received downstream across all connection service instances 
+		on the WAN device."
+    ::= { wanCommonInterfaceConfig 7 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigTotalPacketsSent OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The cumulative counter for total number of packets (IP or PPP) sent upstream across all connection service 
+		instances on the WAN device."
+    ::= { wanCommonInterfaceConfig 8 }
+
+------------------------------------------------
+
+wanCommonInterfaceConfigTotalPacketsReceived OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The cumulative counter for total number of packets (IP or PPP) received downstream across all connection service 
+		instances on the WAN device."
+    ::= { wanCommonInterfaceConfig 9 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfig    OBJECT IDENTIFIER ::= { wanDevice 2 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfigEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables this interface."
+    ::= { wanEthernetInterfaceConfig 1 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfigStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates the status of this interface. 
+		Enumeration of:
+		-
+		Up
+		NoLink
+		Error (OPTIONAL)
+		Disabled
+		-
+		The Error value MAY be used by the CPE to indicate a locally defined error condition."
+    ::= { wanEthernetInterfaceConfig 2 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfigMACAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The physical address of the interface."
+    ::= { wanEthernetInterfaceConfig 3 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfigMaxBitRate OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The maximum upstream and downstream bit rate available to this connection. 
+		Enumeration of:
+		-
+		10
+		100
+		1000
+		10000"
+    ::= { wanEthernetInterfaceConfig 4 }
+
+------------------------------------------------
+
+wanEthernetInterfaceConfigDuplexMode OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The duplex mode available to this connection. 
+		Enumeration of:
+		-
+		Half
+		Full
+		Auto"
+    ::= { wanEthernetInterfaceConfig 5 }
+
+------------------------------------------------
+
+wanConnectionDevice    OBJECT IDENTIFIER ::= { wanDevice 3 }
+
+------------------------------------------------
+
+wanDeviceIPConnection    OBJECT IDENTIFIER ::= { wanConnectionDevice 1 }
+
+------------------------------------------------
+
+wanIPConnectionNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Number of instances of WANConnectionDevice in this WANDevice."
+    ::= { wanDeviceIPConnection 1 }
+
+------------------------------------------------
+
+wanIPConnectionAddNewEntry OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Write any number to add new entry to this table"
+    ::= { wanDeviceIPConnection 2 }
+
+------------------------------------------------
+-- WAN IP Connection TABLE
+------------------------------------------------
+
+tableWANIPConnection OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesWANIPConnection
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "This object enables configuration of IP connections on the WAN interface of a CPE.
+		-
+		If the Layer2Bridging object is implemented, the view that it provides of the CPE's underlying bridging
+		configuration MUST be consistent with the view provided by any LANDevice and WAN**Connection objects. The
+		implications of this are explained in [Annex A.6/TR-098a2].
+		-
+		At most one enabled entry in this table can exist with a given value for ExternalIPAddress."
+    ::= { wanDeviceIPConnection 3 }
+
+--------
+
+entriesWANIPConnection OBJECT-TYPE
+    SYNTAX  EntriesWANIPConnection
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { wanIPConnectionIndex }
+    ::= { tableWANIPConnection 1 }
+
+--------
+
+EntriesWANIPConnection ::=
+    SEQUENCE
+    {
+		wanIPConnectionIndex								Unsigned32,
+        wanIPConnectionEnable                   			Boolean,
+        wanIPConnectionReset                    			Boolean,
+        wanIPConnectionStatus                   			DisplayString,
+        wanIPConnectionPossibleConnectionTypes  			DisplayString,
+        wanIPConnectionConnectionType           			DisplayString,
+        wanIPConnectionName                     			DisplayString,
+        wanIPConnectionUptime                   			Unsigned32,
+        wanIPConnectionLastConnectionError      			DisplayString,
+        wanIPConnectionRSIPAvailable            			Boolean,
+        wanIPConnectionNATEnabled               			Boolean,
+        wanIPConnectionAddressingType           			DisplayString,
+        wanIPConnectionExternalIPAddress        			DisplayString,
+        wanIPConnectionSubnetMask               			DisplayString,
+        wanIPConnectionDefaultGateway           			DisplayString,
+        wanIPConnectionDNSEnabled               			Boolean,
+        wanIPConnectionDNSOverrideAllowed       			Boolean,
+        wanIPConnectionDNSServers               			DisplayString,
+        wanIPConnectionMACAddress               			DisplayString,
+        wanIPConnectionMACAddressOverride       			Boolean,
+        wanIPConnectionConnectionTrigger       				DisplayString,
+        wanIPConnectionRouteProtocolRX          			DisplayString,
+        wanIPConnectionXRtkIgmpProxy            			DisplayString,
+        wanIPConnectionXRtkServiceType          			DisplayString,
+        wanIPConnectionStatsBytesSent                   	Unsigned32,
+        wanIPConnectionStatsBytesReceived               	Unsigned32,
+        wanIPConnectionStatsPacketsSent                  	Unsigned32,
+        wanIPConnectionStatsPacketsReceived              	Unsigned32,
+        wanIPConnectionStatsErrorsSent                   	Unsigned32,
+        wanIPConnectionStatsErrorsReceived              	Unsigned32,
+        wanIPConnectionStatsUnicastPacketsSent           	Unsigned32,
+        wanIPConnectionStatsUnicastPacketsReceived       	Unsigned32,
+        wanIPConnectionStatsDiscardPacketsSent           	Unsigned32,
+        wanIPConnectionStatsDiscardPacketsReceived      	Unsigned32,
+        wanIPConnectionStatsMulticastPacketsSent        	Unsigned32,
+        wanIPConnectionStatsMulticastPacketsReceived     	Unsigned32,
+        wanIPConnectionStatsBroadcastPacketsSent        	Unsigned32,
+        wanIPConnectionStatsBroadcastPacketsReceived    	Unsigned32,
+        wanIPConnectionStatsUnknownProtoPacketsReceived 	Unsigned32,
+		wanIPConnectionDHCPClientSentOptionsNumberOfEntries Unsigned32,
+		wanIPConnectionDHCPClientSentOptionsAddNewEntry		Integer32,
+		wanIPConnectionDHCPClientReqOptionsNumberOfEntries  Unsigned32,
+		wanIPConnectionDHCPClientReqOptionsAddNewEntry		Integer32,
+		wanIPConnectionPortMappingNumberOfEntries			Unsigned32,
+		wanIPConnectionPortMappingAddNewEntry				Integer32,
+		wanIPConnectionRemoveEntry				            Integer32
+    }
+
+-----------------------------------------------
+
+wanIPConnectionIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Unique index for this table."
+    ::= { entriesWANIPConnection 1 }
+
+------------------------------------------------
+
+wanIPConnectionEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Enables or disables the connection instance. On creation of a WANIPConnection instance, it is initially disabled."
+    ::= { entriesWANIPConnection 2 }
+
+------------------------------------------------
+
+wanIPConnectionReset OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "When set to true, the device MUST tear down the existing IP connection represented by this object and establish a 
+		new one.
+		-
+		The device MUST initiate the reset after completion of the current CWMP session. The device MAY delay resetting the 
+		connection in order to avoid interruption of a user service such as an ongoing voice call.
+		-
+		When read, this parameter always returns false."
+    ::= { entriesWANIPConnection 3 }
+
+------------------------------------------------
+
+wanIPConnectionStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Current status of the connection. Enumeration of:
+		-
+		Unconfigured
+		Connecting
+		Connected
+		PendingDisconnect
+		Disconneting (DEPRECATED)
+		Disconnecting
+		Disconnected
+		The value Disconneting is DEPRECATED because it is a typo. The ACS MUST treat Disconneting and Disconnecting the same."
+    ::= { entriesWANIPConnection 4 }
+
+------------------------------------------------
+
+wanIPConnectionPossibleConnectionTypes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of strings. Types of connections possible for this connection instance. 
+		Each list item is an enumeration of:
+		-
+		Unconfigured
+		IP_Routed
+		IP_Bridged"
+    ::= { entriesWANIPConnection 5 }
+
+------------------------------------------------
+
+wanIPConnectionConnectionType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Specifies the connection type of the connection instance.
+		Enumeration of:
+		-
+		Unconfigured
+		IP_Routed
+		IP_Bridged"
+    ::= { entriesWANIPConnection 6 }
+
+------------------------------------------------
+
+wanIPConnectionName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "User-readable name of this connection."
+    ::= { entriesWANIPConnection 7 }
+
+------------------------------------------------
+
+wanIPConnectionUptime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The time in seconds that this connection has been up."
+    ::= { entriesWANIPConnection 8 }
+
+------------------------------------------------
+
+wanIPConnectionLastConnectionError OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "The cause of failure for the last connection setup attempt. 
+		Enumeration of:
+		-
+		ERROR_NONE
+		ERROR_COMMAND_ABORTED
+		ERROR_NOT_ENABLED_FOR_INTERNET
+		ERROR_USER_DISCONNECT
+		ERROR_ISP_DISCONNECT
+		ERROR_IDLE_DISCONNECT
+		ERROR_FORCED_DISCONNECT
+		ERROR_NO_CARRIER
+		ERROR_IP_CONFIGURATION
+		ERROR_UNKNOWN"
+    ::= { entriesWANIPConnection 9 }
+
+------------------------------------------------
+
+wanIPConnectionRSIPAvailable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates if Realm-specific IP (RSIP) is available as a feature on the CPE."
+    ::= { entriesWANIPConnection 10 }
+
+------------------------------------------------
+
+wanIPConnectionNATEnabled OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Indicates if Network Address Translation (NAT) is enabled for this connection."
+    ::= { entriesWANIPConnection 11 }
+
+------------------------------------------------
+
+wanIPConnectionAddressingType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The method used to assign an address to the WAN side interface of the CPE for this connection. 
+		Enumeration of:
+		-
+		DHCP
+		Static"
+    ::= { entriesWANIPConnection 12 }
+
+------------------------------------------------
+
+wanIPConnectionExternalIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        " This is the external IP address used by NAT for this connection. This parameter is configurable 
+		only if the AddressingType is Static.
+		-
+		If Active Notification is enabled, the CPE MUST initiate an Inform whenever either the value of this
+		parameter changes or the default WAN connection changes to a different connection"
+    ::= { entriesWANIPConnection 13 }
+
+------------------------------------------------
+
+wanIPConnectionSubnetMask OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Subnet mask of the WAN interface. This parameter is configurable only if the AddressingType is Static."
+    ::= { entriesWANIPConnection 14 }
+
+------------------------------------------------
+
+wanIPConnectionDefaultGateway OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The IP address of the default gateway for this connection. This parameter is configurable only if the 
+		AddressingType is Static."
+    ::= { entriesWANIPConnection 15 }
+
+------------------------------------------------
+
+wanIPConnectionDNSEnabled OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether or not the device SHOULD attempt to query a DNS server across this connection."
+    ::= { entriesWANIPConnection 16 }
+
+------------------------------------------------
+
+wanIPConnectionDNSOverrideAllowed OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether or not a manually set, non-empty DNS address can be overridden by a DNS entry received from 
+		the WAN."
+    ::= { entriesWANIPConnection 17 }
+
+------------------------------------------------
+
+wanIPConnectionDNSServers OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list (maximum list length 64) of IPAddresses. DNS server IP addresses for this connection.
+		Support for more than three DNS Servers is OPTIONAL."
+    ::= { entriesWANIPConnection 18 }
+
+------------------------------------------------
+
+wanIPConnectionMACAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "The physical address of the WANIPConnection if applicable. Configurable only if MACAddressOverride is present and true."
+    ::= { entriesWANIPConnection 19 }
+
+------------------------------------------------
+
+wanIPConnectionMACAddressOverride OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Whether the value of MACAddress parameter can be overridden. If false, the CPE's default value is used (or restored
+		if it had previously been overridden)."
+    ::= { entriesWANIPConnection 20 }
+
+------------------------------------------------
+
+wanIPConnectionConnectionTrigger OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Trigger used to establish the IP connection. 
+		Enumeration of:
+		-
+		OnDemand
+		AlwaysOn
+		Manual
+		The above values are defined as follows:
+		-
+		OnDemand: If this IP connection is disconnected for any reason, it is to remain disconnected until the CPE has one or more
+		packets to communicate over this connection, at which time the CPE automatically attempts to reestablish the connection.
+		AlwaysOn: If this IP connection is disconnected for any reason, the CPE automatically attempts to reestablish the connection
+		(and continues to attempt to reestablish the connection as long it remains disconnected).
+		Manual: If this IP connection is disconnected for any reason, it is to remain disconnected until the user of the CPE explicitly 
+		instructs the CPE to reestablish the connection.
+		Note that the reason for an IP connection becoming disconnected to begin with might be either external to the CPE, such as 
+		non-renewal of a DHCP lease or momentary disconnection of the physical interface, or internal to the CPE, such as use of the 
+		IdleDisconnectTime and/or AutoDisconnectTime parameters in this object.
+		-
+		Note also that the means by which a CPE would keep an IP connection disconnected (while waiting for the designated trigger) if
+		it is otherwise physically connected and has an IP address is a local matter specific to the implementation of the CPE."
+    ::= { entriesWANIPConnection 21 }
+
+------------------------------------------------
+
+wanIPConnectionRouteProtocolRX OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        "Defines the Rx protocol to be used. 
+		Enumeration of:
+		-
+		Off
+		RIPv1 (OPTIONAL)
+		RIPv2 (OPTIONAL)
+		OSPF (OPTIONAL)"
+    ::= { entriesWANIPConnection 22 }
+
+------------------------------------------------
+
+wanIPConnectionXRtkIgmpProxy OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesWANIPConnection 23 }
+
+------------------------------------------------
+
+wanIPConnectionXRtkServiceType OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesWANIPConnection 24 }
+
+------------------------------------------------
+
+wanIPConnectionStatsBytesSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of bytes transmitted out of the interface, 
+		including framing characters.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 25 }
+
+------------------------------------------------
+
+wanIPConnectionStatsBytesReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of bytes received on the interface, including framing characters.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 26 }
+
+------------------------------------------------
+
+wanIPConnectionStatsPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets transmitted out of the interface.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 27 }
+
+------------------------------------------------
+
+wanIPConnectionStatsPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets which were received on this interface.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 28 }
+
+------------------------------------------------
+
+wanIPConnectionStatsErrorsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of outbound packets that could not be transmitted because of errors.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 29 }
+
+------------------------------------------------
+
+wanIPConnectionStatsErrorsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of inbound packets that contained errors preventing them from being deliverable.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 30 }
+
+------------------------------------------------
+
+wanIPConnectionStatsUnicastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets requested for transmission which were not addressed to a multicast or 
+		broadcast address, including those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 31 }
+
+------------------------------------------------
+
+wanIPConnectionStatsUnicastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of received packets which were not addressed to a multicast or broadcast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 32 }
+
+------------------------------------------------
+
+wanIPConnectionStatsDiscardPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of outbound packets which were chosen to be discarded even though no errors had been 
+	   detected to prevent their being transmitted. One possible reason for discarding such a packet could be
+	   to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 33 }
+
+------------------------------------------------
+
+wanIPConnectionStatsDiscardPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of inbound packets which were chosen to be discarded even though no errors had been
+	    detected to prevent their being deliverable. One possible reason for discarding such a packet could be
+	    to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 34 }
+
+------------------------------------------------
+
+wanIPConnectionStatsMulticastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets requested for transmission which were addressed to a multicast address, 
+	   including those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 35 }
+
+------------------------------------------------
+
+wanIPConnectionStatsMulticastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of received packets which were addressed to a multicast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 36 }
+
+------------------------------------------------
+
+wanIPConnectionStatsBroadcastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets requested for transmission which were addressed to a broadcast address, including 
+	   those that were discarded or not sent.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 37 }
+
+------------------------------------------------
+
+wanIPConnectionStatsBroadcastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of received packets which were addressed to a broadcast address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 38 }
+
+------------------------------------------------
+
+wanIPConnectionStatsUnknownProtoPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The total number of packets received via the interface which were discarded because of an unknown or unsupported protocol.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANIPConnection 39 }
+
+------------------------------------------------
+
+wanIPConnectionDHCPClientSentOptionsNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The number of entries in the SentDHCPOption table."
+   ::= { entriesWANIPConnection 40 }
+
+------------------------------------------------
+
+wanIPConnectionDHCPClientSentOptionsAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to add new entry to table DHCPClientSentOptions."
+   ::= { entriesWANIPConnection 41 }
+
+------------------------------------------------
+
+wanIPConnectionDHCPClientReqOptionsNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "The number of entries in the ReqDHCPOption table."
+   ::= { entriesWANIPConnection 42 }
+   
+------------------------------------------------
+
+wanIPConnectionDHCPClientReqOptionsAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to add new entry to table DHCPClientReqOptions."
+   ::= { entriesWANIPConnection 43 }
+
+------------------------------------------------
+
+wanIPConnectionPortMappingNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Total number of port mapping entries."
+   ::= { entriesWANIPConnection 44 }
+ 
+------------------------------------------------
+
+wanIPConnectionPortMappingAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to add new entry to table PortMapping."
+   ::= { entriesWANIPConnection 45 }
+
+wanIPConnectionRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+      "Write any number to add new entry to table PortMapping."
+    ::= { entriesWANIPConnection 46 }
+
+------------------------------------------------
+-- DHCP Client Sent DHCP Option TABLE
+------------------------------------------------
+
+tableWANIPConnectionDHCPClientSentDHCPOptions OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesDHCPClientSentDHCPOptions
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Each instance of this object represents a DHCP option that MUST, if enabled, be sent in DHCP client requests. 
+		All sent DHCP options MUST be listed.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given value for 
+		Alias. On creation of a new table entry, the Agent MUST choose an initial value for Alias such that the new 
+		entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with a given value for Tag."
+    ::= { wanDeviceIPConnection 4 }
+
+--------
+
+entriesDHCPClientSentDHCPOptions OBJECT-TYPE
+    SYNTAX  EntriesDHCPClientSentDHCPOptions
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { dhcpClientSentDHCPOptionIndex }
+    ::= { tableWANIPConnectionDHCPClientSentDHCPOptions 1 }
+
+--------
+
+EntriesDHCPClientSentDHCPOptions ::=
+    SEQUENCE
+    {
+		dhcpClientSentDHCPOptionIndex			Unsigned32,
+        dhcpClientSentDHCPOptionParentIndex     Unsigned32,
+        dhcpClientSentDHCPOptionEnable          Boolean,
+        dhcpClientSentDHCPOptionTag             Integer32,
+        dhcpClientSentDHCPOptionValue  			DisplayString,
+        dhcpClientSentDHCPOptionRemoveEntry		Integer32
+    }
+
+------------------------------------------------
+
+dhcpClientSentDHCPOptionIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Unique index for table DHCPClientSentDHCPOptions"
+   ::= { entriesDHCPClientSentDHCPOptions 1 } 
+   
+------------------------------------------------
+
+dhcpClientSentDHCPOptionParentIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Parent index of table wanIPConnection"
+   ::= { entriesDHCPClientSentDHCPOptions 2 } 
+   
+------------------------------------------------
+
+dhcpClientSentDHCPOptionEnable OBJECT-TYPE
+   SYNTAX  Boolean
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Enables or disables this SentDHCPOption table entry."
+   ::= { entriesDHCPClientSentDHCPOptions 3 } 
+ 
+------------------------------------------------
+
+dhcpClientSentDHCPOptionTag OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Option tag as defined in RFC 2132."
+   ::= { entriesDHCPClientSentDHCPOptions 4 } 
+    
+------------------------------------------------
+
+dhcpClientSentDHCPOptionValue OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Base64 encoded option value."
+   ::= { entriesDHCPClientSentDHCPOptions 5 } 
+    
+------------------------------------------------
+
+dhcpClientSentDHCPOptionRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to remove entry to this table."
+   ::= { entriesDHCPClientSentDHCPOptions 6 } 
+    
+------------------------------------------------
+-- DHCP Client Req DHCP Option TABLE
+------------------------------------------------
+
+tableWANIPConnectionDHCPClientReqDHCPOptions OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesDHCPClientReqDHCPOptions
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Each instance of this object represents a DHCP option that MUST, if enabled, be requested in DHCP 
+		client requests. All requested DHCP options MUST be listed.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given
+		value for Alias. On creation of a new table entry, the Agent MUST choose an initial value for Alias
+		such that the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with a given value for Tag."
+    ::= { wanDeviceIPConnection 5 }
+
+--------
+
+entriesDHCPClientReqDHCPOptions OBJECT-TYPE
+    SYNTAX  EntriesDHCPClientReqDHCPOptions
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { dhcpClientReqDHCPOptionIndex }
+    ::= { tableWANIPConnectionDHCPClientReqDHCPOptions 1 }
+
+--------
+
+EntriesDHCPClientReqDHCPOptions ::=
+    SEQUENCE
+    {
+		dhcpClientReqDHCPOptionIndex			Unsigned32,
+        dhcpClientReqDHCPOptionParentIndex     	Unsigned32,
+        dhcpClientReqDHCPOptionEnable          	Boolean,
+        dhcpClientReqDHCPOptionOrder          	Unsigned32,
+        dhcpClientReqDHCPOptionTag             	Integer32,
+        dhcpClientReqDHCPOptionValue  			DisplayString,
+        dhcpClientReqDHCPOptionRemoveEntry		Integer32
+    }
+
+------------------------------------------------
+
+dhcpClientReqDHCPOptionIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Unique index for table DHCPClientReqDHCPOptions"
+   ::= { entriesDHCPClientReqDHCPOptions 1 } 
+   
+------------------------------------------------
+
+dhcpClientReqDHCPOptionParentIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Parent index of table wanIPConnection"
+   ::= { entriesDHCPClientReqDHCPOptions 2 } 
+   
+------------------------------------------------
+
+dhcpClientReqDHCPOptionEnable OBJECT-TYPE
+   SYNTAX  Boolean
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Enables or disables this ReqDHCPOption table entry."
+   ::= { entriesDHCPClientReqDHCPOptions 3 } 
+ 
+------------------------------------------------
+
+dhcpClientReqDHCPOptionOrder OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Position of the option in the DHCP client request. A value of 1 indicates the first entry.
+		-
+		When this value is modified, if the value matches that of an existing entry, the Order value for the 
+		existing entry and all lower Order entries is incremented to ensure uniqueness of this value. A deletion
+		causes Order values to be compacted. When a value is changed, incrementing occurs before compaction.
+		-
+		The value on creation of a ReqDHCPOption table entry MUST be one greater than the largest current value."
+   ::= { entriesDHCPClientReqDHCPOptions 4 } 
+ 
+------------------------------------------------
+
+dhcpClientReqDHCPOptionTag OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Option tag as defined in RFC 2132."
+   ::= { entriesDHCPClientReqDHCPOptions 5 } 
+    
+------------------------------------------------
+
+dhcpClientReqDHCPOptionValue OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Base64 encoded most recently received DHCP option value.
+		-
+		If no option value has been received, then the value MUST represent an empty string.
+		-
+		Received DHCP option values MAY, but need not, persist across CPE reboots."
+   ::= { entriesDHCPClientReqDHCPOptions 6 } 
+    
+------------------------------------------------
+
+dhcpClientReqDHCPOptionRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to remove entry to this table."
+   ::= { entriesDHCPClientReqDHCPOptions 7 } 
+
+------------------------------------------------
+-- Port Mapping TABLE
+------------------------------------------------
+
+tableWANIPConnectionPortMapping OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesWANIPConnectionPortMapping
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Port mapping table.
+		-
+		This table MUST contain all NAT port mappings associated with this connection, including static and
+		dynamic port mappings programmatically created via local control protocol, such as UPnP.
+		-
+		This table MUST NOT contain dynamic NAT binding entries associated with the normal operation of NAT.
+		-
+		At most one entry in an instance of this table can exist with all of the same values for RemoteHost, 
+		ExternalPort, and PortMappingProtocol. If the ACS attempts to set the parameters of an existing entry 
+		such that this requirement would be violated, the CPE MUST reject the request. In this case, the 
+		SetParameterValues response MUST include a SetParameterValuesFault element for each parameter in the 
+		corresponding request whose modification would have resulted in such a violation. On creation of a new 
+		table entry, the CPE MUST choose default values for ExternalPort and PortMappingProtocol such that the 
+		new entry does not conflict with any existing entry.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given value
+		for Alias. On creation of a new table entry, the Agent MUST choose an initial value for Alias such that 
+		the new entry does not conflict with any existing entries.
+		-
+		At most one enabled entry in this table can exist with all the same values for RemoteHost, ExternalPort
+		and PortMappingProtocol."
+    ::= { wanDeviceIPConnection 6 }
+
+--------
+
+entriesWANIPConnectionPortMapping OBJECT-TYPE
+    SYNTAX  EntriesWANIPConnectionPortMapping
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { wanIPConnectionPortMappingIndex }
+    ::= { tableWANIPConnectionPortMapping 1 }
+
+--------
+
+EntriesWANIPConnectionPortMapping ::=
+    SEQUENCE
+    {
+		wanIPConnectionPortMappingIndex				Unsigned32,
+        wanIPConnectionPortMappingParentIndex     	Unsigned32,
+        wanIPConnectionPortMappingEnabled          	Boolean,
+        wanIPConnectionPortMappingLeaseDuration     Unsigned32,
+        wanIPConnectionPortMappingRemoteHost        DisplayString,
+        wanIPConnectionPortMappingExternalPort  	Unsigned32,
+        wanIPConnectionPortMappingInternalPort		Unsigned32,
+        wanIPConnectionPortMappingProtocol			DisplayString,
+        wanIPConnectionPortMappingInternalClient	DisplayString,
+        wanIPConnectionPortMappingDescription		DisplayString,
+        wanIPConnectionPortMappingRemoveEntry		Integer32
+    }
+
+------------------------------------------------
+
+wanIPConnectionPortMappingIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Unique index for table WANIPConnectionPortMapping."
+   ::= { entriesWANIPConnectionPortMapping 1 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingParentIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Parent index of table wanIPConnection."
+   ::= { entriesWANIPConnectionPortMapping 2 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingEnabled OBJECT-TYPE
+   SYNTAX  Boolean
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Enables or disables the port mapping instance. On creation, an entry is disabled by default."
+   ::= { entriesWANIPConnectionPortMapping 3 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingLeaseDuration OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Determines the time to live, in seconds, of a port-mapping lease, where time to live means
+		the number of seconds before the port mapping expires.
+		-
+		A value of 0 means the port mapping is static. Support for dynamic (non-static) port mappings
+		is OPTIONAL. That is, the only value for PortMappingLeaseDuration that MUST be supported is 0.
+		-
+		For a dynamic (non-static) port mapping, when this parameter is read, the value represents the
+		time remaining on the port-mapping lease. That is, for a dynamic port mapping, the value counts
+		down toward 0. When a dynamic port-mapping lease expires, the CPE MUST automatically terminate
+		that port mapping, and MUST automatically delete the corresponding PortMapping table entry."
+   ::= { entriesWANIPConnectionPortMapping 4 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingRemoteHost OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "This parameter is the IP address of the source of inbound packets. An empty string indicates a 
+	    wildcard (this will be a wildcard in most cases). CPE are REQUIRED only to support wildcards.
+		-
+		When RemoteHost is a wildcard, all traffic sent to the ExternalPort on the WAN interface of the
+		gateway is forwarded to the InternalClient on the InternalPort.
+		-
+		When RemoteHost is specified as one external IP address, the NAT will only forward inbound packets
+		from this RemoteHost to the InternalClient, all other packets will be dropped.
+		-
+		If a CPE supports non-wildcard values for RemoteHost, it MAY additionally support the ability to 
+		have more than one port mapping with the same ExternalPort and PortMappingProtocol, but with 
+		differing values of RemoteHost.
+		-
+		When wildcard values are used for RemoteHost and/or ExternalPort, the following precedence order
+		applies (with the highest precedence listed first):
+		-
+		Explicit RemoteHost, explicit ExternalPort
+		Explicit RemoteHost, wildcard ExternalPort
+		Wildcard RemoteHost, explicit ExternalPort
+		Wildcard RemoteHost, wildcard ExternalPort
+		If an incoming packet matches the criteria associated with more than one entry in this table, the CPE 
+		MUST apply the port mapping associated with the highest precedence entry.
+		-
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, 
+		and PortMappingProtocol."
+   ::= { entriesWANIPConnectionPortMapping 5 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingExternalPort OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The external port (or the first port of a range of external ports) that the NAT gateway would listen
+	    on for connection requests to a corresponding InternalPort. Inbound packets to this external port on
+	    the WAN interface SHOULD be forwarded to InternalClient on the InternalPort.
+		-
+		A value of zero (0) represents a wildcard. If this value is a wildcard, connection requests on all
+		external ports (that are not otherwise mapped) will be forwarded to InternalClient. In the wildcard case,
+		the value(s) of InternalPort on InternalClient are ignored.
+		-
+		When wildcard values are used for RemoteHost and/or ExternalPort, the following precedence order applies
+		(with the highest precedence listed first):
+		-
+		Explicit RemoteHost, explicit ExternalPort
+		Explicit RemoteHost, wildcard ExternalPort
+		Wildcard RemoteHost, explicit ExternalPort
+		Wildcard RemoteHost, wildcard ExternalPort
+		If an incoming packet matches the criteria associated with more than one entry in this table, the CPE MUST 
+		apply the port mapping associated with the highest precedence entry.
+		-
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, and 
+		PortMappingProtocol."
+   ::= { entriesWANIPConnectionPortMapping 6 } 
+
+------------------------------------------------
+
+wanIPConnectionPortMappingInternalPort OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The port on InternalClient that the gateway SHOULD forward connection requests to. A value of zero (0) is 
+	   not allowed."
+   ::= { entriesWANIPConnectionPortMapping 7 } 
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingProtocol OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The protocol of the port mapping. Enumeration of:
+		-
+		TCP
+		UDP
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, and 
+		PortMappingProtocol."
+   ::= { entriesWANIPConnectionPortMapping 8 }
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingInternalClient OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The IP address or DNS host name of an internal client (on the LAN).
+		-
+		Support for an IP address is mandatory. If InternalClient is specified as an IP address and the LAN device's 
+		IP address subsequently changes, the port mapping MUST remain associated with the original IP address.
+		-
+		Support for DNS host names is OPTIONAL. If InternalClient is specified as a DNS host name and the LAN device's
+		IP address subsequently changes, the port mapping MUST remain associated with this LAN device. In this case, it
+		is the responsibility of the CPE to maintain the name-to-address mapping in the event of IP address changes. 
+		This can be accomplished, for example, by assigning the DNS host name via use of DHCP option 12 (Host Name) or 
+		option 81 (FQDN). Note that the ACS can learn the host name associated with a given LAN device via the Hosts table
+		(InternetGatewayDevice.LANDevice.{i}.Hosts).
+		-
+		Read access to this parameter MUST always return the exact value that was last set by the ACS. For example, if the
+		internal client is set to a DNS host name, it MUST read back as a DNS host name and not as an IP address.
+		-
+		An empty string indicates an unconfigured InternalClient. If this parameter is unconfigured, this port mapping MUST 
+		NOT be operational.
+		-
+		It MUST be possible to set the InternalClient to the broadcast IP address 255.255.255.255 for UDP mappings. This is
+		to enable multiple NAT clients to use the same well-known port simultaneously."
+   ::= { entriesWANIPConnectionPortMapping 9 }
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingDescription OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "User-readable description of this port mapping."
+   ::= { entriesWANIPConnectionPortMapping 10 }
+   
+------------------------------------------------
+
+wanIPConnectionPortMappingRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to remove the entry from this table."
+   ::= { entriesWANIPConnectionPortMapping 11 }
+   
+------------------------------------------------
+
+wanDevicePPPConnection    OBJECT IDENTIFIER ::= { wanConnectionDevice 2 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Number of instances of WANPPPConnection in this WANConnectionDevice."
+   ::= { wanDevicePPPConnection 1 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to add new entry to table WANDevicePPPConnection."
+   ::= { wanDevicePPPConnection 2 }
+   
+------------------------------------------------
+-- WAN Device PPP Connection TABLE
+------------------------------------------------
+
+tableWANDevicePPPConnection OBJECT-TYPE
+   SYNTAX  SEQUENCE OF EntriesWANDevicePPPConnection
+   ACCESS  not-accessible
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   ::= { wanDevicePPPConnection 3 }
+
+--------
+
+entriesWANDevicePPPConnection OBJECT-TYPE
+   SYNTAX  EntriesWANDevicePPPConnection
+   ACCESS  not-accessible
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   INDEX   { wanDevicePPPConnectionIndex }
+   ::= { tableWANDevicePPPConnection 1 }
+
+--------
+
+EntriesWANDevicePPPConnection ::=
+   SEQUENCE
+   {
+		wanDevicePPPConnectionIndex								Unsigned32,
+		wanDevicePPPConnectionEnable       						Boolean,
+		wanDevicePPPConnectionReset                     		Boolean,
+		wanDevicePPPConnectionStatus                    		DisplayString,
+		wanDevicePPPConnectionPossibleConnectionTypes   		DisplayString,
+		wanDevicePPPConnectionConnectionType           			DisplayString,
+		wanDevicePPPConnectionPPPoESessionID            		Unsigned32,
+		wanDevicePPPConnectionDefaultGateway            		DisplayString,
+		wanDevicePPPConnectionName                      		DisplayString,
+		wanDevicePPPConnectionUptime                    		Unsigned32,
+		wanDevicePPPConnectionLastConnectionError       		DisplayString,
+		wanDevicePPPConnectionRSIPAvailable             		Boolean,
+		wanDevicePPPConnectionNATEnabled                		Boolean,
+		wanDevicePPPConnectionUsername                  		DisplayString,
+		wanDevicePPPConnectionPassword                  		DisplayString,
+		wanDevicePPPConnectionExternalIPAddress         		DisplayString,
+		wanDevicePPPConnectionDNSEnabled                		Boolean,
+		wanDevicePPPConnectionDNSOverrideAllowed        		Boolean,
+		wanDevicePPPConnectionDNSServers                		DisplayString,
+		wanDevicePPPConnectionMACAddress                		DisplayString,
+		wanDevicePPPConnectionMACAddressOverride        		Boolean,
+		wanDevicePPPConnectionTransportType             		DisplayString,
+		wanDevicePPPConnectionPPPoEACName               		DisplayString,
+		wanDevicePPPConnectionPPPoEServiceName          		DisplayString,
+		wanDevicePPPConnectionConnectionTrigger        			DisplayString,
+		wanDevicePPPConnectionRouteProtocolRX           		DisplayString,
+		wanDevicePPPConnectionXRtkIgmpProxy             		DisplayString,
+		wanDevicePPPConnectionXRtkServiceType           		DisplayString,
+		wanDevicePPPConnectionStatsBytesSent                	Unsigned32,
+		wanDevicePPPConnectionStatsBytesReceived            	Unsigned32,
+		wanDevicePPPConnectionStatsPacketsSent               	Unsigned32,
+		wanDevicePPPConnectionStatsPacketsReceived          	Unsigned32,
+		wanDevicePPPConnectionStatsErrorsSent                	Unsigned32,
+		wanDevicePPPConnectionStatsErrorsReceived            	Unsigned32,
+		wanDevicePPPConnectionStatsUnicastPacketsSent        	Unsigned32,
+		wanDevicePPPConnectionStatsUnicastPacketsReceived    	Unsigned32,
+		wanDevicePPPConnectionStatsDiscardPacketsSent        	Unsigned32,
+		wanDevicePPPConnectionStatsDiscardPacketsReceived    	Unsigned32,
+		wanDevicePPPConnectionStatsMulticastPacketsSent      	Unsigned32,
+		wanDevicePPPConnectionStatsMulticastPacketsReceived  	Unsigned32,
+		wanDevicePPPConnectionStatsBroadcastPacketsSent      	Unsigned32,
+		wanDevicePPPConnectionStatsBroadcastPacketsReceived     Unsigned32,
+		wanDevicePPPConnectionStatsUnknownProtoPacketsReceived  Unsigned32,
+		wanDevicePPPConnectionPortMappingNumberOfEntries  		Unsigned32,
+		wanDevicePPPConnectionPortMappingAddNewEntry  			Integer32,
+		wanDevicePPPConnectionRemoveEntry						Integer32
+   }
+
+------------------------------------------------
+
+wanDevicePPPConnectionIndex OBJECT-TYPE
+  SYNTAX  Unsigned32
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Unique index for table wanDevicePPPConnection."
+  ::= { entriesWANDevicePPPConnection 1 }
+
+------------------------------------------------
+  
+wanDevicePPPConnectionEnable OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Enables or disables the connection instance. On creation of a WANPPPConnection instance, 
+		it is initially disabled."
+  ::= { entriesWANDevicePPPConnection 2 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionReset OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"When set to true, the device MUST tear down the existing PPP connection represented by 
+		this object and establish a new one.
+		-
+		The device MUST initiate the reset after completion of the current CWMP session. The 
+		device MAY delay resetting the connection in order to avoid interruption of a user 
+		service such as an ongoing voice call.
+		-
+		When read, this parameter always returns false."
+  ::= { entriesWANDevicePPPConnection 3 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatus OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Current status of the connection. 
+		Enumeration of:
+		-
+		Unconfigured
+		Connecting
+		Authenticating
+		Connected
+		PendingDisconnect
+		Disconnecting
+		Disconnected"
+  ::= { entriesWANDevicePPPConnection 4 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPossibleConnectionTypes OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Comma-separated list of strings. Types of connections possible for this connection instance. 
+		Each list item is an enumeration of:
+		-
+		Unconfigured
+		IP_Routed
+		DHCP_Spoofed
+		PPPoE_Bridged
+		PPPoE_Relay
+		PPTP_Relay
+		L2TP_Relay"
+  ::= { entriesWANDevicePPPConnection 5 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionConnectionType OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Specifies the connection type of the connection instance. 
+		Enumeration of:
+		-
+		Unconfigured
+		IP_Routed
+		DHCP_Spoofed
+		PPPoE_Bridged
+		PPPoE_Relay
+		PPTP_Relay
+		L2TP_Relay"
+  ::= { entriesWANDevicePPPConnection 6 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPPPoESessionID OBJECT-TYPE
+  SYNTAX  Unsigned32
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Represents the PPPoE Session ID."
+  ::= { entriesWANDevicePPPConnection 7 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionDefaultGateway OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Represents the IP Address of the remote end Default Gateway established through PPPoE."
+  ::= { entriesWANDevicePPPConnection 8 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionName OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      "User-readable name of this connection."
+  ::= { entriesWANDevicePPPConnection 9 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionUptime OBJECT-TYPE
+  SYNTAX  Unsigned32
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+      "The time in seconds that this connection has been up."
+  ::= { entriesWANDevicePPPConnection 10 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionLastConnectionError OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"The cause of failure for the last connection setup attempt. 
+		Enumeration of:
+		-
+		ERROR_NONE
+		ERROR_ISP_TIME_OUT
+		ERROR_COMMAND_ABORTED
+		ERROR_NOT_ENABLED_FOR_INTERNET
+		ERROR_BAD_PHONE_NUMBER
+		ERROR_USER_DISCONNECT
+		ERROR_ISP_DISCONNECT
+		ERROR_IDLE_DISCONNECT
+		ERROR_FORCED_DISCONNECT
+		ERROR_SERVER_OUT_OF_RESOURCES
+		ERROR_RESTRICTED_LOGON_HOURS
+		ERROR_ACCOUNT_DISABLED
+		ERROR_ACCOUNT_EXPIRED
+		ERROR_PASSWORD_EXPIRED
+		ERROR_AUTHENTICATION_FAILURE
+		ERROR_NO_DIALTONE
+		ERROR_NO_CARRIER
+		ERROR_NO_ANSWER
+		ERROR_LINE_BUSY
+		ERROR_UNSUPPORTED_BITSPERSECOND
+		ERROR_TOO_MANY_LINE_ERRORS
+		ERROR_IP_CONFIGURATION
+		ERROR_UNKNOWN"
+  ::= { entriesWANDevicePPPConnection 11 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionRSIPAvailable OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Indicates if Realm-specific IP (RSIP) is available as a feature on the CPE."
+  ::= { entriesWANDevicePPPConnection 12 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionNATEnabled OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Indicates if Network Address Translation (NAT) is enabled for this connection."
+  ::= { entriesWANDevicePPPConnection 13 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionUsername OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Username to be used for authentication."
+  ::= { entriesWANDevicePPPConnection 14 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPassword OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  write-only
+  STATUS  mandatory
+  DESCRIPTION
+		"Password to be usef for authentication.
+		-
+		When read, this parameter returns an empty string, regardless of the actual value."
+  ::= { entriesWANDevicePPPConnection 15 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionExternalIPAddress OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"This is the external IP address used by NAT for this connection.
+		-
+		If Active Notification is enabled, the CPE MUST initiate an Inform whenever either the 
+		value of this parameter changes or the default WAN connection changes to a different 
+		connection."
+  ::= { entriesWANDevicePPPConnection 16 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionDNSEnabled OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Whether or not the device SHOULD attempt to query a DNS server across this connection."
+  ::= { entriesWANDevicePPPConnection 17 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionDNSOverrideAllowed OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Whether or not a manually set, non-empty DNS address can be overridden by a DNS entry 
+		received from the WAN."
+  ::= { entriesWANDevicePPPConnection 18 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionDNSServers OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Comma-separated list (maximum list length 64) of IPAddresses. DNS server IP addresses 
+		for this connection. Support for more than three DNS Servers is OPTIONAL."
+  ::= { entriesWANDevicePPPConnection 19 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionMACAddress OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"The physical address of the WANPPPConnection if applicable. Configurable only if MACAddressOverride
+		is present and true.
+		-
+		If TransportType is PPPoA, the value of this parameter is irrelevant and MUST be an empty string."
+  ::= { entriesWANDevicePPPConnection 20 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionMACAddressOverride OBJECT-TYPE
+  SYNTAX  Boolean
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Whether the value of MACAddress parameter can be overridden. If false, the CPE's default value is used
+		(or restored if it had previously been overridden).
+		-
+		If TransportType is PPPoA, the value of this parameter is irrelevant and MUST be false."
+  ::= { entriesWANDevicePPPConnection 21 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionTransportType OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-only
+  STATUS  mandatory
+  DESCRIPTION
+		"PPP transport type of the connection. 
+		Enumeration of:
+		-
+		PPPoA
+		PPPoE
+		L2TP (for future use)
+		PPTP (for future use)"
+  ::= { entriesWANDevicePPPConnection 22 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPPPoEACName OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"PPPoE Access Concentrator."
+  ::= { entriesWANDevicePPPConnection 23 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPPPoEServiceName OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"PPPoE Service Name."
+  ::= { entriesWANDevicePPPConnection 24 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionConnectionTrigger OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Trigger used to establish the PPP connection. 
+		Enumeration of:
+		-
+		OnDemand
+		AlwaysOn
+		Manual
+		The above values are defined as follows:
+
+		OnDemand: If this PPP connection is disconnected for any reason, it is to remain disconnected
+		until the CPE has one or more packets to communicate over this connection, at which time the
+		CPE automatically attempts to reestablish the connection.
+		AlwaysOn: If this PPP connection is disconnected for any reason, the CPE automatically attempts 
+		to reestablish the connection (and continues to attempt to reestablish the connection as long it
+		remains disconnected).
+		Manual: If this PPP connection is disconnected for any reason, it is to remain disconnected until
+		the user of the CPE explicitly instructs the CPE to reestablish the connection.
+		Note that the reason for a PPP connection becoming disconnected to begin with might be either 
+		external to the CPE, such as termination by the BRAS or momentary disconnection of the physical 
+		interface, or internal to the CPE, such as use of the IdleDisconnectTime and/or AutoDisconnectTime
+		parameters in this object."
+  ::= { entriesWANDevicePPPConnection 25 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionRouteProtocolRX OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+		"Defines the Rx protocol to be used. 
+		Enumeration of:
+		-
+		Off
+		RIPv1 (OPTIONAL)
+		RIPv2 (OPTIONAL)
+		OSPF (OPTIONAL)"
+  ::= { entriesWANDevicePPPConnection 26 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionXRtkIgmpProxy OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      ""
+  ::= { entriesWANDevicePPPConnection 27 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionXRtkServiceType OBJECT-TYPE
+  SYNTAX  DisplayString
+  ACCESS  read-write
+  STATUS  mandatory
+  DESCRIPTION
+      ""
+  ::= { entriesWANDevicePPPConnection 28 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsBytesSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of bytes transmitted, including framing characters, over all connections 
+		within the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 29 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsBytesReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of bytes received, including framing characters, over all connections within
+		the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 30 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets transmitted over all connections within the same WANConnectionDevice 
+		that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 31 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets which were received over all connections within the same WANConnectionDevice
+		that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 32 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsErrorsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of outbound packets that could not be transmitted because of errors, over all connections
+		within the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 33 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsErrorsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of inbound packets that contained errors preventing them from being deliverable, over all
+		connections within the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 34 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsUnicastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets requested for transmission which were not addressed to a multicast or broadcast 
+		address, including those that were discarded or not sent, over all connections within the same WANConnectionDevice
+		that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 35 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsUnicastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of received packets which were not addressed to a multicast or broadcast address, over all 
+		connections within the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 36 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsDiscardPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of outbound packets which were chosen to be discarded even though no errors had been detected 
+		to prevent their being transmitted, over all connections within the same WANConnectionDevice that share a common
+		MAC address. One possible reason for discarding such a packet could be to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 37 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsDiscardPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of inbound packets which were chosen to be discarded even though no errors had been detected to
+		prevent their being deliverable, over all connections within the same WANConnectionDevice that share a common MAC
+		address. One possible reason for discarding such a packet could be to free up buffer space.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 38 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsMulticastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets requested for transmission, including those that were discarded or not sent, which were
+		addressed to a multicast address, over all connections within the same WANConnectionDevice that share a common MAC
+		address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 39 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsMulticastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of received packets which were addressed to a multicast address, over all connections within the
+		same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 40 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsBroadcastPacketsSent OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets requested for transmission, including those that were discarded or not sent, which were 
+		addressed to a broadcast address, over all connections within the same WANConnectionDevice that share a common MAC 
+		address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 41 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsBroadcastPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of received packets which were addressed to a broadcast address, over all connections within the
+		same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 42 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionStatsUnknownProtoPacketsReceived OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+		"The total number of packets which were discarded because of an unknown or unsupported protocol, received over all 
+		connections within the same WANConnectionDevice that share a common MAC address.
+		-
+		The value of this counter MAY be reset to zero when the CPE is rebooted."
+   ::= { entriesWANDevicePPPConnection 43 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPortMappingNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Total number of port mapping entries."
+   ::= { entriesWANDevicePPPConnection 44 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionPortMappingAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to add new entry to table PortMapping."
+   ::= { entriesWANDevicePPPConnection 45 }
+
+------------------------------------------------
+
+wanDevicePPPConnectionRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to remove this entry to this table."
+   ::= { entriesWANDevicePPPConnection 46 }
+
+------------------------------------------------
+-- Port Mapping TABLE
+------------------------------------------------
+
+tableWANPPPConnectionPortMapping OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesWANPPPConnectionPortMapping
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        "Port mapping table.
+		-
+		This table MUST contain all NAT port mappings associated with this connection, including static and dynamic port mappings 
+		programmatically created via local control protocol, such as UPnP.
+
+		This table MUST NOT contain dynamic NAT binding entries associated with the normal operation of NAT.
+
+		At most one entry in an instance of this table can exist with all of the same values for RemoteHost, ExternalPort, and
+		PortMappingProtocol. If the ACS attempts to set the parameters of an existing entry such that this requirement would be 
+		violated, the CPE MUST reject the request. In this case, the SetParameterValues response MUST include a SetParameterValuesFault
+		element for each parameter in the corresponding request whose modification would have resulted in such a violation. On creation
+		of a new table entry, the CPE MUST choose default values for ExternalPort and PortMappingProtocol such that the new entry does
+		not conflict with any existing entry.
+		-
+		At most one entry in this table (regardless of whether or not it is enabled) can exist with a given value for Alias. On creation
+		of a new table entry, the Agent MUST choose an initial value for Alias such that the new entry does not conflict with any existing
+		entries.
+		-
+		At most one enabled entry in this table can exist with all the same values for RemoteHost, ExternalPort and PortMappingProtocol."
+    ::= { wanDevicePPPConnection 4 }
+
+--------
+
+entriesWANPPPConnectionPortMapping OBJECT-TYPE
+    SYNTAX  EntriesWANPPPConnectionPortMapping
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { wanPPPConnectionPortMappingIndex }
+    ::= { tableWANPPPConnectionPortMapping 1 }
+
+--------
+
+EntriesWANPPPConnectionPortMapping ::=
+    SEQUENCE
+    {
+		wanPPPConnectionPortMappingIndex			Unsigned32,
+        wanPPPConnectionPortMappingParentIndex     	Unsigned32,
+        wanPPPConnectionPortMappingEnabled          Boolean,
+        wanPPPConnectionPortMappingLeaseDuration    Unsigned32,
+        wanPPPConnectionPortMappingRemoteHost       DisplayString,
+        wanPPPConnectionPortMappingExternalPort  	Unsigned32,
+        wanPPPConnectionPortMappingInternalPort		Unsigned32,
+        wanPPPConnectionPortMappingProtocol			DisplayString,
+        wanPPPConnectionPortMappingInternalClient	DisplayString,
+        wanPPPConnectionPortMappingDescription		DisplayString,
+        wanPPPConnectionPortMappingRemoveEntry		Integer32
+    }
+
+------------------------------------------------
+
+wanPPPConnectionPortMappingIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Unique index for table WANPPPConnectionPortMapping."
+   ::= { entriesWANPPPConnectionPortMapping 1 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingParentIndex OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Parent index of table wanDevicePPPConnection."
+   ::= { entriesWANPPPConnectionPortMapping 2 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingEnabled OBJECT-TYPE
+   SYNTAX  Boolean
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Enables or disables the port mapping instance. On creation, an entry is disabled by default."
+   ::= { entriesWANPPPConnectionPortMapping 3 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingLeaseDuration OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "Determines the time to live, in seconds, of a port-mapping lease, where (time to live) means the
+	   number of seconds before the port mapping expires.
+		-
+		A value of 0 means the port mapping is static. Support for dynamic (non-static) port mappings is
+		OPTIONAL. That is, the only value for PortMappingLeaseDuration that MUST be supported is 0.
+		-
+		For a dynamic (non-static) port mapping, when this parameter is read, the value represents the 
+		time remaining on the port-mapping lease. That is, for a dynamic port mapping, the value counts
+		down toward 0. When a dynamic port-mapping lease expires, the CPE MUST automatically terminate 
+		that port mapping, and MUST automatically delete the corresponding PortMapping table entry."
+   ::= { entriesWANPPPConnectionPortMapping 4 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingRemoteHost OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "This parameter is the IP address of the source of inbound packets. An empty string indicates a 
+	    wildcard (this will be a wildcard in most cases). CPE are REQUIRED only to support wildcards.
+		-
+		When RemoteHost is a wildcard, all traffic sent to the ExternalPort on the WAN interface of the
+		gateway is forwarded to the InternalClient on the InternalPort.
+		-
+		When RemoteHost is specified as one external IP address, the NAT will only forward inbound packets 
+		from this RemoteHost to the InternalClient, all other packets will be dropped.
+		-
+		If a CPE supports non-wildcard values for RemoteHost, it MAY additionally support the ability to
+		have more than one port mapping with the same ExternalPort and PortMappingProtocol, but with differing
+		values of RemoteHost.
+		-
+		When wildcard values are used for RemoteHost and/or ExternalPort, the following precedence order
+		applies (with the highest precedence listed first):
+		-
+		Explicit RemoteHost, explicit ExternalPort
+		Explicit RemoteHost, wildcard ExternalPort
+		Wildcard RemoteHost, explicit ExternalPort
+		Wildcard RemoteHost, wildcard ExternalPort
+		If an incoming packet matches the criteria associated with more than one entry in this table, the CPE
+		MUST apply the port mapping associated with the highest precedence entry.
+		-
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, and
+		PortMappingProtocol."
+   ::= { entriesWANPPPConnectionPortMapping 5 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingExternalPort OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The external port (or the first port of a range of external ports) that the NAT gateway would listen
+	    on for connection requests to a corresponding InternalPort. Inbound packets to this external port on
+	    the WAN interface SHOULD be forwarded to InternalClient on the InternalPort.
+		-
+		A value of zero (0) represents a wildcard. If this value is a wildcard, connection requests on all
+		external ports (that are not otherwise mapped) will be forwarded to InternalClient. In the wildcard case,
+		the value(s) of InternalPort on InternalClient are ignored.
+		-
+		When wildcard values are used for RemoteHost and/or ExternalPort, the following precedence order applies
+		(with the highest precedence listed first):
+		-
+		Explicit RemoteHost, explicit ExternalPort
+		Explicit RemoteHost, wildcard ExternalPort
+		Wildcard RemoteHost, explicit ExternalPort
+		Wildcard RemoteHost, wildcard ExternalPort
+		If an incoming packet matches the criteria associated with more than one entry in this table, the CPE MUST 
+		apply the port mapping associated with the highest precedence entry.
+		-
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, and 
+		PortMappingProtocol."
+   ::= { entriesWANPPPConnectionPortMapping 6 } 
+
+------------------------------------------------
+
+wanPPPConnectionPortMappingInternalPort OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The port on InternalClient that the gateway SHOULD forward connection requests to. A value of zero (0) is 
+	   not allowed."
+   ::= { entriesWANPPPConnectionPortMapping 7 } 
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingProtocol OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The protocol of the port mapping. Enumeration of:
+		-
+		TCP
+		UDP
+		At most one entry in this table can exist with all of the same values for RemoteHost, ExternalPort, and 
+		PortMappingProtocol."
+   ::= { entriesWANPPPConnectionPortMapping 8 }
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingInternalClient OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "The IP address or DNS host name of an internal client (on the LAN).
+		-
+		Support for an IP address is mandatory. If InternalClient is specified as an IP address and the LAN device's 
+		IP address subsequently changes, the port mapping MUST remain associated with the original IP address.
+		-
+		Support for DNS host names is OPTIONAL. If InternalClient is specified as a DNS host name and the LAN device's
+		IP address subsequently changes, the port mapping MUST remain associated with this LAN device. In this case, it
+		is the responsibility of the CPE to maintain the name-to-address mapping in the event of IP address changes. 
+		This can be accomplished, for example, by assigning the DNS host name via use of DHCP option 12 (Host Name) or 
+		option 81 (FQDN). Note that the ACS can learn the host name associated with a given LAN device via the Hosts table
+		(InternetGatewayDevice.LANDevice.{i}.Hosts).
+		-
+		Read access to this parameter MUST always return the exact value that was last set by the ACS. For example, if the
+		internal client is set to a DNS host name, it MUST read back as a DNS host name and not as an IP address.
+		-
+		An empty string indicates an unconfigured InternalClient. If this parameter is unconfigured, this port mapping MUST 
+		NOT be operational.
+		-
+		It MUST be possible to set the InternalClient to the broadcast IP address 255.255.255.255 for UDP mappings. This is
+		to enable multiple NAT clients to use the same well-known port simultaneously."
+   ::= { entriesWANPPPConnectionPortMapping 9 }
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingDescription OBJECT-TYPE
+   SYNTAX  DisplayString
+   ACCESS  read-write
+   STATUS  mandatory
+   DESCRIPTION
+       "User-readable description of this port mapping."
+   ::= { entriesWANPPPConnectionPortMapping 10 }
+   
+------------------------------------------------
+
+wanPPPConnectionPortMappingRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       "Write any number to remove the entry from this table."
+   ::= { entriesWANPPPConnectionPortMapping 11 }
+   
+------------------------------------------------
+
+END

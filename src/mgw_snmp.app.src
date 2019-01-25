@@ -1,0 +1,17 @@
+{application, mgw_snmp,
+ [{description, "An OTP application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {mgw_snmp_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    snmp
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
