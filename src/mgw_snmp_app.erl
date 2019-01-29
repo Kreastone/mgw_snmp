@@ -19,10 +19,10 @@
 start(_StartType, _StartArgs) ->
   case start() of
     ok ->
-        snmpa:load_mib("MINI-MGW"),
-        mgw_snmp_sup:start_link();
+      snmpa:load_mib("MINI-MGW"),
+      mgw_snmp_sup:start_link();
     {error, Reason} ->
-        io:format("error: ~p~n", [Reason])
+      io:format("error: ~p~n", [Reason])
   end.
 
 %%--------------------------------------------------------------------
@@ -49,17 +49,17 @@ start() ->
   end.
 
 start_snmp(List_Config) ->
-  List_V1 =
+  V1 =
     case proplists:get_value(<<"Version1">>, List_Config) of
         1 -> [v1];
         _ -> []
     end,
-  List_V2 =
+  V2 =
     case proplists:get_value(<<"Version2">>, List_Config) of
         1 -> [v2];
         _ -> []
     end,
-  List_V3 =
+  V3 =
     case proplists:get_value(<<"Version3">>, List_Config) of
         1 -> [v3];
         _ -> []
@@ -67,7 +67,7 @@ start_snmp(List_Config) ->
 
   Config = [
     {priority, normal},
-    {versions, List_V1 ++ List_V2 ++ List_V3},
+    {versions, V1 ++ V2 ++ V3},
     {db_dir, ""},
     {db_init_error, true},
     {mib_storage, [{module,snmpa_mib_storage_ets}]},
@@ -133,7 +133,7 @@ create_file_config(List_Config) ->
       [
         {intAgentUDPPort, Port},
         {intAgentIpAddress, [127,0,1,1]},
-        {snmpEngineID, "kreastone"},
+        {snmpEngineID, "telecom"},
         {snmpEngineMaxMessageSize, MaxSize}
       ]],
     ["./tmp/community.conf",
