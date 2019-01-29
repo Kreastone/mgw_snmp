@@ -5,8 +5,7 @@
   {mod, {mgw_snmp_app, []}},
   {applications,
    [kernel,
-    stdlib,
-    snmp
+    stdlib
    ]},
   {env,[]},
   {modules, []},

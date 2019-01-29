@@ -27,6 +27,7 @@ start(_StartType, _StartArgs) ->
 
 %%--------------------------------------------------------------------
 stop(_State) ->
+  snmp:stop(),
   ok.
 
 %%====================================================================
@@ -106,7 +107,8 @@ delete_config_files() ->
     "./tmp/usm.conf",
     "./tmp/vacm.conf"
   ],
-  delete_file(Table_Files).
+  delete_file(Table_Files),
+  file:del_dir("tmp").
 
 delete_file([]) ->
   ok;
