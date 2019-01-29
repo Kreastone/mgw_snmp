@@ -15,6 +15,7 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
+    io:format("test~n"),
     snmpc:compile("MINI-MGW"),
     snmpa:load_mib("MINI-MGW"),
     mgw_snmp_sup:start_link().
