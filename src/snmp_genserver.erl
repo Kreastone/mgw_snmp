@@ -88,10 +88,10 @@ handle_call(_Request, _From, State) ->
 %%======================================================================
 
 get_list_index([Start_Path, End_Path]) when is_list(Start_Path), is_list(End_Path) ->
-  List_Objects_Parent = access_tables:get_field(Start_Path),
+  List_Objects_Parent = snmp_funcs:get_field(Start_Path),
   parse_list_parent_index(lists:reverse(List_Objects_Parent), Start_Path, End_Path, 1, []);
 get_list_index(Table_Path) ->
-  List_Objects = access_tables:get_field(Table_Path),
+  List_Objects = snmp_funcs:get_field(Table_Path),
   parse_list_index(lists:reverse(List_Objects), 1, []).
 parse_list_index([], _Current_Index, Res) ->
   Res;
@@ -104,7 +104,7 @@ parse_list_parent_index([], _Start_Path, _End_Path, _Current_Index, Res) ->
   Res;
 parse_list_parent_index([Object|Table_Objects], Start_Path, End_Path, Current_Index, Res) when is_record(Object, object) ->
   Parent_Index = Object#object.index,
-  List_Objects_Child = access_tables:get_field(Start_Path ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Path),
+  List_Objects_Child = snmp_funcs:get_field(Start_Path ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Path),
   Result_Parent = get_lists_index(List_Objects_Child, Parent_Index, Current_Index, []),
   parse_list_parent_index(Table_Objects, Start_Path, End_Path, Current_Index + lists:flatlength(Result_Parent), Res ++ Result_Parent );
 parse_list_parent_index(_, _, _, _, _) ->

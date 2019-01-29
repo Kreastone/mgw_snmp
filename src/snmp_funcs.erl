@@ -17,6 +17,9 @@
 -export([handle_child_table/5]).
 -export([add_new_entry/3]).
 
+%%
+-export([get_field/1, delete_object/1, create_object/1]).
+
 %%----------------------------------------------------------------
 %% Instrumentation function for variables.
 %% Returns: (get)       {value, Value} | {noValue, noSuchInstance}
@@ -27,7 +30,7 @@
   Address :: [binary()],
   Value   ::  integer() | list().
 handle_value(get, Address) ->
-  parse_field(access_tables:get_field(Address));
+  parse_field(get_field(Address));
 handle_value(_, _) ->
   {noValue, noSuchInstance}.
 
@@ -37,9 +40,9 @@ handle_value(_, _) ->
   Value   ::  integer() | list(),
   Address :: [binary()].
 handle_value(set, Value, Address) when is_integer(Value) ->
-  check_value(Value, Address, access_tables:get_field(Address));
+  check_value(Value, Address, get_field(Address));
 handle_value(set, Value, Address) when is_list(Value) ->
-  check_value(binary:list_to_bin(Value), Address, access_tables:get_field(Address));
+  check_value(binary:list_to_bin(Value), Address, get_field(Address));
 handle_value(set, _, _) ->
   {noValue, noSuchInstance}.
 
@@ -113,7 +116,7 @@ handle_table(set, _, _, _, _) ->
   _Value  :: integer(),
   Address :: [binary()].
 add_new_entry(set, _Value, Address) ->
-  access_tables:create_object(Address),
+  create_object(Address),
   noError;
 add_new_entry(set, _, _) ->
   {noValue, noSuchInstance}.
@@ -212,7 +215,7 @@ get_child_table_value(Value_Name, _Indexs, _Address) when Value_Name == remove -
   [{value, 0}];
 get_child_table_value(Value_Name, {Parent_Index, Index}, [Start_Address, End_Address]) ->
   Address =  Start_Address ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Address ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
-  case parse_field(access_tables:get_field(Address)) of
+  case parse_field(get_field(Address)) of
     {value, Value} ->
       [{value, Value}];
     _ ->
@@ -238,10 +241,10 @@ set_table_value(_Value_Name, Index, _Address, _Value) when Index == 0 ->
 set_table_value(Value_Name, _Index, _Address, _Value) when Value_Name == index ->
   {noValue, noSuchInstance};
 set_table_value(Value_Name, Index, Address, _Value) when Value_Name == remove ->
-  access_tables:delete_object(Address ++ [list_to_binary(integer_to_list(Index))]),
+  delete_object(Address ++ [list_to_binary(integer_to_list(Index))]),
   {noError, 0};
 set_table_value({add, Object}, Index, Address, _Value)  ->
-  access_tables:create_object(Address ++ [list_to_binary(integer_to_list(Index))] ++ Object),
+  create_object(Address ++ [list_to_binary(integer_to_list(Index))] ++ Object),
   {noError, 0};
 set_table_value(Value_Name, Index, Path, Value) ->
   Address =  Path ++ [list_to_binary(integer_to_list(Index))],
@@ -281,7 +284,7 @@ get_table_value(Value_Name, _Index, _Address) when is_tuple(Value_Name) ->
   [{value, 0}];
 get_table_value(Value_Name, Index, Path) ->
   Address =  Path ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
-  case parse_field(access_tables:get_field(Address)) of
+  case parse_field(get_field(Address)) of
     {value, Value} ->
       [{value, Value}];
     _ ->
@@ -329,10 +332,10 @@ check_value(_Value, _Address, _Index, Value_Name) when is_tuple(Value_Name)  ->
   noError;
 check_value(Value, Address, Index, Value_Name) when is_list(Value) ->
   Path = Address ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
-  check_value(binary:list_to_bin(Value), Path, access_tables:get_field(Path));
+  check_value(binary:list_to_bin(Value), Path, get_field(Path));
 check_value(Value, Address, Index, Value_Name) when is_integer(Value) ->
   Path = Address ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
-  check_value(Value, Path, access_tables:get_field(Path));
+  check_value(Value, Path, get_field(Path));
 check_value(_Value, _Address, _Index, _Value_Name) ->
   genErr.
 
@@ -421,3 +424,12 @@ get_indexs(Index, List_Indexes) ->
   end.
 
 %======================================================
+
+get_field(Address) ->
+  access_tables:get_field(Address).
+
+create_object(Address) ->
+  access_tables:create_object(Address).
+
+delete_object(Address) ->
+  access_tables:delete_object(Address).
