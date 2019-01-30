@@ -45,11 +45,11 @@ start_listen() ->
   case start() of
     ok ->
       Priv = code:priv_dir(mgw_snmp),
-      case filelib:is_file(Priv ++ "/MINI-MGW.bin") of
+      case filelib:is_file("MINI-MGW.bin") of
         true -> ok;
         false -> snmpc:compile(Priv ++ "/MINI-MGW")
       end,
-      snmpa:load_mib(Priv ++ "/MINI-MGW");
+      snmpa:load_mib("MINI-MGW");
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
