@@ -1,6 +1,6 @@
 {application, mgw_snmp,
  [{description, "An OTP application"},
-  {vsn, "0.1.0"},
+  {vsn, "1.1.0"},
   {registered, []},
   {mod, {mgw_snmp_app, []}},
   {applications,
