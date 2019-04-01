@@ -44,12 +44,13 @@
 start_listen() ->
   case start() of
     ok ->
+%%      Priv = code:priv_dir(mgw_snmp),
+%%      case filelib:is_file("MINI-MGW.bin") of
+%%        true -> ok;
+%%        false -> snmpc:compile(Priv ++ "/MINI-MGW")
+%%      end,
       Priv = code:priv_dir(mgw_snmp),
-      case filelib:is_file("MINI-MGW.bin") of
-        true -> ok;
-        false -> snmpc:compile(Priv ++ "/MINI-MGW")
-      end,
-      snmpa:load_mib("MINI-MGW");
+      snmpa:load_mib(Priv ++ "/MINI-MGW");
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
@@ -351,7 +352,7 @@ create_file_config(List_Config) ->
     ["./tmp/community.conf",
       [
         {CommunityRead, CommunityRead, "initial", "", ""},
-        {CommunityWrite, CommunityWrite, "initial", "", ""},
+        {CommunityWrite, CommunityWrite, CommunityWrite, "", ""},
         {CommunityTrap, CommunityTrap, "initial", "", ""}
       ]],
     ["./tmp/context.conf",
