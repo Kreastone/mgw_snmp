@@ -50,7 +50,7 @@ test() ->
     {<<"CommunityRead">>, <<"public">>},
     {<<"CommunityWrite">>, <<"all-rights">>},
     {<<"CommunityTrap">>, <<"private">>},
-    {<<"Port">>, 162},
+    {<<"Port">>, 4000},
     {<<"TrapEnable">>, 0},
     {<<"DstIPAddressTrap">>, <<"127.0.0.1">>},
     {<<"DstPortTrap">>, 5000},
@@ -64,7 +64,10 @@ test() ->
       io:format("create files config: ok~n"),
       Res = start_snmp(List_Config),
       io:format("start snmp: ~p~n", [Res]),
-      ResLoad = snmpa:load_mib("MINI-MGW"),
+
+      Priv = code:priv_dir(mgw_snmp),
+      ResLoad = snmpa:load_mib(Priv ++ "/mibs/MINI-MGW"),
+
       io:format("snmpa:load_mib: ~p~n", [ResLoad]);
   Error ->
       io:format("create files config: error, ~p~n", [Error])
@@ -79,7 +82,7 @@ start_listen() ->
 %%        false -> snmpc:compile(Priv ++ "/MINI-MGW")
 %%      end,
       Priv = code:priv_dir(mgw_snmp),
-      snmpa:load_mib(Priv ++ "/MINI-MGW");
+      snmpa:load_mib(Priv ++ "/mibs/MINI-MGW");
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
