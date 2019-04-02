@@ -15,6 +15,7 @@
 %% API
 -export([start_link/0]).
 -export([start_listen/0, stop_listen/0]).
+-export([test/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -40,6 +41,34 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+test() ->
+  List_Config = [
+    {<<"Version1">>, 1},
+    {<<"Version2">>, 1},
+    {<<"Version3">>, 1},
+    {<<"CommunityRead">>, <<"public">>},
+    {<<"CommunityWrite">>, <<"all-rights">>},
+    {<<"CommunityTrap">>, <<"private">>},
+    {<<"Port">>, 162},
+    {<<"TrapEnable">>, 0},
+    {<<"DstIPAddressTrap">>, <<"127.0.0.1">>},
+    {<<"DstPortTrap">>, 5000},
+    {<<"MaxSize">>, 484}
+  ],
+
+  io:format("create list~n"),
+
+  case create_file_config(List_Config) of
+    ok ->
+      io:format("create files config: ok~n"),
+      Res = start_snmp(List_Config),
+      io:format("start snmp: ~p~n", [Res]),
+      ResLoad = snmpa:load_mib("MINI-MGW"),
+      io:format("snmpa:load_mib: ~p~n", [ResLoad]);
+  Error ->
+      io:format("create files config: error, ~p~n", [Error])
+  end.
 
 start_listen() ->
   case start() of
