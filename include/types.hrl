@@ -98,31 +98,3 @@
     pid_cowboy :: pid(),
     pid_wait :: pid()
 }).
-
--record(object, {
-    id = 0 :: integer(),
-    order = 1 :: integer(),
-    object = []:: [] | integer(),
-    name :: binary(),
-    type = single :: single | massif | template | virtual,
-    index = 0 :: integer(),
-    numberOfEntries = [] :: [] | [binary()] | [ref_row(parameter)], %% decoding into a reference when creating an object
-    uniqueParameters = [] :: [binary()], %% checking the child parameters for uniqueness when creating an object
-
-    create_remove :: boolean(),
-    on_create_remove :: atom()
-}).
-
-
--type udp_sock() :: {inet:socket(), inet:ip_address(), inet:port_number()}.
--type unix_sock():: {inet:socket(), {local, string()}}.
-
--record(dn_users, {
-    id :: mgw_util:id(),
-    user :: binary(),
-    group :: [integer()],
-    type :: mgw_util:type_connection(),
-    host = <<"">> :: binary(),
-    ttl = 0 :: integer(), %% sek
-    socket :: udp_sock() | unix_sock()
-}).
