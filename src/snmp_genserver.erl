@@ -63,7 +63,7 @@ test() ->
       Res = start_snmp(List_Config),
       io:format("start snmp: ~p~n", [Res]),
       Priv = code:priv_dir(mgw_snmp),
-      ResLoad = snmpa:load_mib(Priv ++ "/mibs/MINI-MGW"),
+      ResLoad = snmpa:load_mib(Priv ++ "/MINI-MGW"),
       io:format("snmpa:load_mib: ~p~n", [ResLoad]),
       io:format("community read: public~n"),
       io:format("community write: all-right~n"),
@@ -81,7 +81,7 @@ start_listen() ->
 %%        false -> snmpc:compile(Priv ++ "/MINI-MGW")
 %%      end,
       Priv = code:priv_dir(mgw_snmp),
-      snmpa:load_mib(Priv ++ "/mibs/MINI-MGW");
+      snmpa:load_mib(Priv ++ "/MINI-MGW");
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
@@ -98,7 +98,7 @@ stop_listen() ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link() ->
   Priv = code:priv_dir(mgw_snmp),
-  Snmp_Ebin = Priv ++ "/snmp_ebin",
+  Snmp_Ebin = Priv ++ "/snmp_module/ebin",
   code:add_pathsa([Snmp_Ebin]),
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
