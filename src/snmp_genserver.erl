@@ -56,19 +56,18 @@ test() ->
     {<<"DstPortTrap">>, 5000},
     {<<"MaxSize">>, 484}
   ],
-
   io:format("create list~n"),
-
   case create_file_config(List_Config) of
     ok ->
       io:format("create files config: ok~n"),
       Res = start_snmp(List_Config),
       io:format("start snmp: ~p~n", [Res]),
-
       Priv = code:priv_dir(mgw_snmp),
       ResLoad = snmpa:load_mib(Priv ++ "/mibs/MINI-MGW"),
-
-      io:format("snmpa:load_mib: ~p~n", [ResLoad]);
+      io:format("snmpa:load_mib: ~p~n", [ResLoad]),
+      io:format("community read: public~n"),
+      io:format("community write: all-right~n"),
+      io:format("port: 4000~n");
   Error ->
       io:format("create files config: error, ~p~n", [Error])
   end.
@@ -98,8 +97,9 @@ stop_listen() ->
 -spec(start_link() ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link() ->
-%%  snmp:start(),
-%%  snmpa:load_mib("MINI-MGW"),
+  Priv = code:priv_dir(mgw_snmp),
+  Snmp_Ebin = Priv ++ "/snmp_ebin",
+  code:add_pathsa([Snmp_Ebin]),
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
