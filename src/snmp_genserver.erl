@@ -98,8 +98,8 @@ stop_listen() ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link() ->
   Priv = code:priv_dir(mgw_snmp),
-  Snmp_Ebin = Priv ++ "/snmp_module/ebin",
-  code:add_pathsa([Snmp_Ebin]),
+  code:add_pathsa([Priv ++ "/snmp/ebin"]),
+  code:add_path(Priv ++ "/snmp"),
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
