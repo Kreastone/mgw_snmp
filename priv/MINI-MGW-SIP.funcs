@@ -1,0 +1,52 @@
+{capabilitiesMaxProfileCount, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"MaxProfileCount">>]]}}.
+{capabilitiesMaxLineCount, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"MaxLineCount">>]]}}.
+{capabilitiesMaxSessionsPerLine, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"MaxSessionsPerLine">>]]}}.
+{capabilitiesMaxSessionCount, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"MaxSessionCount">>]]}}.
+{capabilitiesSignalingProtocols, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SignalingProtocols">>]]}}.
+{capabilitiesRegions, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"Regions">>]]}}.
+{capabilitiesRTCP, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RTCP">>]]}}.
+{capabilitiesSRTP, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SRTP">>]]}}.
+{capabilitiesSRTPKeyingMethods, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SRTPKeyingMethods">>]]}}.
+{capabilitiesSRTPEncryptionKeySizes, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SRTPEncryptionKeySizes">>]]}}.
+{capabilitiesRTPRedundancy, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RTPRedundancy">>]]}}.
+{capabilitiesDSCPCoupled, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"DSCPCoupled">>]]}}.
+{capabilitiesEthernetTaggingCoupled, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"EthernetTaggingCoupled">>]]}}.
+{capabilitiesPSTNSoftSwitchOver, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"PSTNSoftSwitchOver">>]]}}.
+{capabilitiesFaxT38, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"FaxT38">>]]}}.
+{capabilitiesFaxPassThrough, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"FaxPassThrough">>]]}}.
+{capabilitiesModemPassThrough, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"ModemPassThrough">>]]}}.
+{capabilitiesToneGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"ToneGeneration">>]]}}.
+{capabilitiesToneDescriptionsEditable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"ToneDescriptionsEditable">>]]}}.
+{capabilitiesPatternBasedToneGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"PatternBasedToneGeneration">>]]}}.
+{capabilitiesFileBasedToneGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"FileBasedToneGeneration">>]]}}.
+{capabilitiesToneFileFormats, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"ToneFileFormats">>]]}}.
+{capabilitiesRingGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RingGeneration">>]]}}.
+{capabilitiesRingDescriptionsEditable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RingDescriptionsEditable">>]]}}.
+{capabilitiesPatternBasedRingGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RingDescriptionsEditable">>]]}}.
+{capabilitiesRingPatternEditable, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RingPatternEditable">>]]}}.
+{capabilitiesFileBasedRingGeneration, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"FileBasedRingGeneration">>]]}}.
+{capabilitiesRingFileFormats, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"RingFileFormats">>]]}}.
+{capabilitiesDigitMap, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"DigitMap">>]]}}.
+{capabilitiesNumberingPlan, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"NumberingPlan">>]]}}.
+{capabilitiesButtonMap, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"ButtonMap">>]]}}.
+{capabilitiesVoicePortTests, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"VoicePortTests">>]]}}.
+
+{capabilitiesSIPRole, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"Role">>]]}}.
+{capabilitiesSIPExtensions, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"Extensions">>]]}}.
+{capabilitiesSIPTransports, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"Transports">>]]}}.
+{capabilitiesSIPURISchemes, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"URISchemes">>]]}}.
+{capabilitiesSIPEventSubscription, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"EventSubscription">>]]}}.
+{capabilitiesSIPResponseMap, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"ResponseMap">>]]}}.
+{capabilitiesSIPTLSAuthenticationProtocols, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"TLSAuthenticationProtocols">>]]}}.
+{capabilitiesSIPTLSAuthenticationKeySizes, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"TLSAuthenticationKeySizes">>]]}}.
+{capabilitiesSIPTLSEncryptionProtocols, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"TLSEncryptionProtocols">>]]}}.
+{capabilitiesSIPTLSEncryptionKeySizes, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"TLSEncryptionKeySizes">>]]}}.
+{capabilitiesSIPTLSKeyExchangeProtocols, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"SIP">>, <<"TLSKeyExchangeProtocols">>]]}}.
+
+{tableCapabilityCodecs, {snmp_funcs, handle_table,
+  [[[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"Capabilities">>, <<"Codecs">>]],
+  [{1, [<<"EntryID">>]},
+  {2, [<<"Codec">>]},
+  {3, [<<"BitRate">>]},
+  {4, [<<"PacketizationPeriod">>]},
+  {5, [<<"SilenceSuppression">>]} ]]}}.

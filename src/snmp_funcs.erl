@@ -14,9 +14,7 @@
 %% API
 -export([handle_value/2, handle_value/3]).
 -export([handle_table/5]).
--export([handle_child_table/5]).
 -export([add_new_entry/3]).
-
 %%
 -export([get_field/1, delete_object/1, create_object/1]).
 
@@ -64,8 +62,7 @@ handle_table(get, [ColIndex], [NameIndex], Address, Names) ->
   Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
   get_table_value(
     proplists:get_value(NameIndex, Names),
-    get_index(ColIndex, Indexs),
-    Address);
+    get_indexs(ColIndex, Indexs));
 handle_table(get, _, _, _Start_Path, _Names) ->
   {noValue, noSuchInstance};
 
@@ -79,9 +76,8 @@ handle_table(get_next, [ColIndex], [NameIndex], Address, Names) ->
   Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
   case
     get_next_table_value(ColIndex,
-      NameIndex, Address,
-      proplists:get_value(NameIndex, Names),
-      get_index(ColIndex+1, Indexs)) of
+      NameIndex, proplists:get_value(NameIndex, Names),
+      get_indexs(ColIndex+1, Indexs)) of
     next ->
       handle_table(get_next, [0], [NameIndex+1], Address, Names);
     Value ->
@@ -93,13 +89,11 @@ handle_table(get_next, _ColIndex, _NameIndex, _Address, _Names) ->
 %--------------
 
 handle_table(set, [ColIndex], List_NameValue, Address, Names) when is_list(List_NameValue) ->
-  Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
-  Index = get_index(ColIndex, Indexs),
-  case check_values(List_NameValue,
-    Index,
-    Address, Names) of
+  IndexsPath = gen_server:call(snmp_genserver, [get_list_index, Address]),
+  Indexs = get_indexs(ColIndex, IndexsPath),
+  case check_values(List_NameValue, Indexs, Names) of
     noError ->
-      set_table(List_NameValue, Index, Address, Names),
+      set_table(List_NameValue, Indexs, Names),
       {noError, 0};
     _ ->
       {genErr, 0}
@@ -121,80 +115,24 @@ add_new_entry(set, _Value, Address) ->
 add_new_entry(set, _, _) ->
   {noValue, noSuchInstance}.
 
-%%----------------------------------------------------------------
-%% CHILD TABLES
-%%----------------------------------------------------------------
-
--spec handle_child_table(Fun, ColIndex, NameIndex, Address, Names) -> [{value, Value}] | {noValue, noSuchInstance} when
-  Fun :: get | get_next | set,
-  ColIndex :: [integer()],
-  NameIndex :: [integer()],
-  Address :: [binary()],
-  Names :: [tuple()],
-  Value   ::  integer() | list().
-handle_child_table(get, [ColIndex], [NameIndex], Address, Names) ->
-  Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
-  get_child_table_value(
-    proplists:get_value(NameIndex, Names),
-    get_indexs(ColIndex, Indexs),
-    Address);
-handle_child_table(get, _, _, _, _) ->
-  {noValue, noSuchInstance};
-
-%--------------
-
-handle_child_table(get_next, [], [NameIndex], Address, Names) ->
-  handle_child_table(get_next, [0], [NameIndex], Address, Names);
-handle_child_table(get_next, [ColIndex], [NameIndex], Address, Names) when NameIndex == 0 ->
-  handle_child_table(get_next, [ColIndex], [NameIndex + 1], Address, Names);
-handle_child_table(get_next, [ColIndex], [NameIndex], Address, Names) ->
-  Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
-  case
-    get_next_child_table_value(ColIndex,
-      NameIndex, Address,
-      proplists:get_value(NameIndex, Names),
-      get_indexs(ColIndex+1, Indexs)) of
-    next ->
-      handle_child_table(get_next, [0], [NameIndex+1], Address, Names);
-    Value ->
-      Value
-  end;
-handle_child_table(get_next, _ColIndex, _NameIndex, _Address, _Names) ->
-  {noValue, noSuchInstance};
-
-handle_child_table(set, [ColIndex], List_NameValue, Address, Names) when is_list(List_NameValue) ->
-  All_Indexs = gen_server:call(snmp_genserver, [get_list_index, Address]),
-  Index = get_indexs(ColIndex, All_Indexs),
-
-  case check_child_values(List_NameValue,
-    Index,
-    Address, Names) of
-    noError ->
-      set_table(List_NameValue, Index, Address, Names),
-      {noError, 0};
-    _ ->
-      {genErr, 0}
-  end;
-handle_child_table(set, _, _, _, _) ->
-  {genErr, 0}.
-
 %========================================================
 % Internal function
 %========================================================
 
-get_next_child_table_value(_ColIndex, _NameIndex, _Address, Value_Name, _Index) when Value_Name == undefined ->
+get_next_table_value(_ColIndex, _NameIndex, Value_Name, _Indexs) when Value_Name == undefined ->
   [endOfTable];
-get_next_child_table_value(_ColIndex, _NameIndex, _Address, _Value_Name, {Parent_Index, Index}) when Parent_Index == 0, Index == 0 ->
+get_next_table_value(_ColIndex, _NameIndex, _Value_Name, 0) ->
   next;
-get_next_child_table_value(ColIndex, NameIndex, _Address, Value_Name, {_Parent_Index, Index}) when Value_Name == index ->
-  [{[NameIndex, ColIndex+1], Index}];
-get_next_child_table_value(ColIndex, NameIndex, _Address, Value_Name, {Parent_Index, _Index}) when Value_Name == parent_index ->
-  [{[NameIndex, ColIndex+1], Parent_Index}];
-get_next_child_table_value(ColIndex, NameIndex, _Address, Value_Name, _Index) when Value_Name == remove ->
+get_next_table_value(ColIndex, NameIndex, Value_Name, [Indexs, _Path]) when Value_Name == index ->
+  [{[NameIndex, ColIndex+1], lists:last(Indexs)}];
+get_next_table_value(ColIndex, NameIndex, Value_Name, [Indexs, _Path]) when Value_Name == parent_index ->
+  [{[NameIndex, ColIndex+1], lists:nth(erlang:length(Indexs) - 1, Indexs)}];
+get_next_table_value(ColIndex, NameIndex, Value_Name, _Indexs) when Value_Name == remove ->
   [{[NameIndex, ColIndex+1], 0}];
-get_next_child_table_value(ColIndex, NameIndex, [Start_Address, End_Address], Value_Name, {Parent_Index, Index}) ->
-  Address =  Start_Address ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Address,
-  case get_table_value(Value_Name, Index, Address) of
+get_next_table_value(ColIndex, NameIndex, {add, _}, _Indexs) ->
+  [{[NameIndex, ColIndex+1], 0}];
+get_next_table_value(ColIndex, NameIndex, Value_Name, Indexs) ->
+  case get_table_value(Value_Name, Indexs) of
     [{value, Value}] ->
       [{[NameIndex, ColIndex+1], Value}];
     _ ->
@@ -203,18 +141,21 @@ get_next_child_table_value(ColIndex, NameIndex, [Start_Address, End_Address], Va
 
 %--------------
 
-get_child_table_value(Value_Name, _Indexs, _Address) when Value_Name == undefined ->
+get_table_value(Value_Name, _Indexs) when Value_Name == undefined ->
   {noValue, noSuchInstance};
-get_child_table_value(_Value_Name, {Parent_Index, Index}, _Address) when Index == 0, Parent_Index == 0 ->
+get_table_value(_Value_Name, 0) ->
   {noValue, noSuchInstance};
-get_child_table_value(Value_Name, {_Parent_Index, Index}, _Address) when Value_Name == index ->
-  [{value, Index}];
-get_child_table_value(Value_Name, {Parent_Index, _Indexs}, _Address) when Value_Name == parent_index ->
-  [{value, Parent_Index}];
-get_child_table_value(Value_Name, _Indexs, _Address) when Value_Name == remove ->
+get_table_value(Value_Name, [Indexs, _Path]) when Value_Name == index ->
+  [{value, lists:last(Indexs)}];
+get_table_value(Value_Name, [Indexs, _Path]) when Value_Name == parent_index ->
+  [{value, lists:nth(erlang:length(Indexs) - 1, Indexs)}];
+get_table_value(Value_Name, _Indexs) when Value_Name == remove ->
   [{value, 0}];
-get_child_table_value(Value_Name, {Parent_Index, Index}, [Start_Address, End_Address]) ->
-  Address =  Start_Address ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Address ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
+get_table_value({add, _}, _Indexs) ->
+  [{value, 0}];
+get_table_value(Value_Name, [Indexs, Path]) ->
+  Index = lists:last(Indexs),
+  Address =  Path ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
   case parse_field(get_field(Address)) of
     {value, Value} ->
       [{value, Value}];
@@ -224,21 +165,21 @@ get_child_table_value(Value_Name, {Parent_Index, Index}, [Start_Address, End_Add
 
 %--------------
 
-set_table([], _Index, _Address, _Names) ->
+set_table([], _Index, _Names) ->
   ok;
-set_table([{NameIndex, Value}|Table], {Parent_Index, Index}, [Start_Address, End_Address], Names) ->
-  Address = Start_Address ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Address,
-  set_table_value(proplists:get_value(NameIndex, Names), Index, Address, Value),
-  set_table(Table, {Parent_Index, Index}, [Start_Address, End_Address], Names);
-set_table([{NameIndex, Value}|Table], Index, Address, Names) ->
-  set_table_value(proplists:get_value(NameIndex, Names), Index, Address, Value),
-  set_table(Table, Index, Address, Names).
+set_table([{NameIndex, Value}|Table], [Indexs, Path], Names) ->
+  set_table_value(proplists:get_value(NameIndex, Names), lists:last(Indexs), Path, Value),
+  set_table(Table, [Indexs, Path], Names).
+
+%--------------
 
 set_table_value(Value_Name, _Index, _Address, _Value) when Value_Name == undefined ->
   {noValue, noSuchInstance};
 set_table_value(_Value_Name, Index, _Address, _Value) when Index == 0 ->
   {noValue, noSuchInstance};
 set_table_value(Value_Name, _Index, _Address, _Value) when Value_Name == index ->
+  {noValue, noSuchInstance};
+set_table_value(Value_Name, _Index, _Address, _Value) when Value_Name == parent_index ->
   {noValue, noSuchInstance};
 set_table_value(Value_Name, Index, Address, _Value) when Value_Name == remove ->
   delete_object(Address ++ [list_to_binary(integer_to_list(Index))]),
@@ -252,77 +193,21 @@ set_table_value(Value_Name, Index, Path, Value) ->
 
 %--------------
 
-get_next_table_value(_ColIndex, _NameIndex, _Address, Value_Name, _Index) when Value_Name == undefined ->
-  [endOfTable];
-get_next_table_value(_ColIndex, _NameIndex, _Address, _Value_Name, Index) when Index == 0 ->
-  next;
-get_next_table_value(ColIndex, NameIndex, _Address, Value_Name, Index) when Value_Name == index ->
-  [{[NameIndex, ColIndex+1], Index}];
-get_next_table_value(ColIndex, NameIndex, _Address, Value_Name, _Index) when Value_Name == remove ->
-  [{[NameIndex, ColIndex+1], 0}];
-get_next_table_value(ColIndex, NameIndex, _Address, Value_Name, _Index) when is_tuple(Value_Name) ->
-  [{[NameIndex, ColIndex+1], 0}];
-get_next_table_value(ColIndex, NameIndex, Address, Value_Name, Index) ->
-  case get_table_value(Value_Name, Index, Address) of
-    [{value, Value}] ->
-      [{[NameIndex, ColIndex+1], Value}];
-    _ ->
-      {noValue, noSuchInstance}
-  end.
-
-%--------------
-
-get_table_value(Value_Name, _Index, _Address) when Value_Name == undefined ->
-  {noValue, noSuchInstance};
-get_table_value(_Value_Name, Index, _Address) when Index == 0 ->
-  {noValue, noSuchInstance};
-get_table_value(Value_Name, Index, _Address) when Value_Name == index ->
-  [{value, Index}];
-get_table_value(Value_Name, _Index, _Address) when Value_Name == remove ->
-  [{value, 0}];
-get_table_value(Value_Name, _Index, _Address) when is_tuple(Value_Name) ->
-  [{value, 0}];
-get_table_value(Value_Name, Index, Path) ->
-  Address =  Path ++ [list_to_binary(integer_to_list(Index))] ++ Value_Name,
-  case parse_field(get_field(Address)) of
-    {value, Value} ->
-      [{value, Value}];
-    _ ->
-    {noValue, noSuchInstance}
-  end.
-
-%--------------
-
-check_child_values([],  _Index, _Address, _Names) ->
+check_values([],  _Index, _Names) ->
   noError;
-check_child_values(_List_NameValue,  {Parent_Index, Index}, _Address, _Names) when Parent_Index == 0, Index == 0 ->
+check_values(_List_NameValue,  0, _Names) ->
   genErr;
-check_child_values([{NameIndex, Value}|List_NameValue], {Parent_Index, Index}, [Start_Address, End_Address], Names) ->
-  Address = Start_Address ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Address,
+check_values([{NameIndex, Value}|List_NameValue], [Indexs, Path], Names) ->
   case
-    check_value(Value, Address, Index,
+    check_value(Value, Path, lists:last(Indexs),
       proplists:get_value(NameIndex, Names)) of
     noError ->
-      check_child_values(List_NameValue, {Parent_Index, Index}, [Start_Address, End_Address], Names);
+      check_values(List_NameValue, [Indexs, Path], Names);
     _ ->
       genErr
   end.
 
 %--------------
-
-check_values([], _Index, _Address, _Names) ->
-  noError;
-check_values(_List_NameValue, Index, _Address, _Names) when Index == 0 ->
-  genErr;
-check_values([{NameIndex, Value}|List_NameValue], Index, Address, Names) ->
-  case
-    check_value(Value, Address, Index,
-      proplists:get_value(NameIndex, Names)) of
-    noError ->
-      check_values(List_NameValue, Index, Address, Names);
-    _ ->
-      genErr
-  end.
 
 check_value(_Value, _Address, _Index, Value_Name) when Value_Name == undefined  ->
   genErr;
@@ -411,16 +296,10 @@ parse_boolean_field(_) ->
 
 %--------------
 
-get_index(Index, List_Indexes) ->
-  case proplists:get_value(Index, List_Indexes) of
-    undefined -> 0;
-    Value -> Value
-  end.
 get_indexs(Index, List_Indexes) ->
-  case proplists:get_value(Index, List_Indexes) of
-    undefined -> {0, 0};
-    {Parent_Index, New_Index} -> {Parent_Index, New_Index};
-    _ -> {0, 0}
+  Length = erlang:length(List_Indexes),
+  if (Index > Length) -> 0;
+    true -> lists:nth(Index, List_Indexes)
   end.
 
 %======================================================

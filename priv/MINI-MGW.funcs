@@ -11,7 +11,7 @@
 {temperatureSensorNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"TemperatureStatus">>, <<"TemperatureSensorNumberOfEntries">>]]}}.
 
 {tableTemperatureSensor, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"TemperatureStatus">>, <<"TemperatureSensor">>],
+    [[[<<"InternetGatewayDevice">>, <<"DeviceInfo">>, <<"TemperatureStatus">>, <<"TemperatureSensor">>]],
     [{1, index},
     {2, [<<"Name">>]},
     {3, [<<"Status">>]},
@@ -43,7 +43,7 @@
 {remoteAccessAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccess">>]]}}.
 
 {tableRemoteAccess, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccess">>],
+    [[[<<"InternetGatewayDevice">>, <<"UserInterface">>, <<"RemoteAccess">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"Port">>]},
@@ -59,7 +59,7 @@
 {forwardAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"Forwarding">>]]}}.
 
 {tableForwarding, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"Forwarding">>],
+    [[[<<"InternetGatewayDevice">>, <<"Layer3Forwarding">>, <<"Forwarding">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"Status">>]},
@@ -82,7 +82,7 @@
 {bridgeAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Bridge">>]]}}.
 
 {tableBridge, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Bridge">>],
+    [[[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Bridge">>]],
     [{1, [<<"BridgeKey">>]},
     {2, [<<"BridgeStandard">>]},
     {3, [<<"BridgeEnable">>]},
@@ -96,7 +96,7 @@
 {filterAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Filter">>]]}}.
 
 {tableFilter, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Filter">>],
+    [[[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Filter">>]],
     [{1, [<<"FilterKey">>]},
     {2, [<<"FilterEnable">>]},
     {3, [<<"FilterStatus">>]},
@@ -111,7 +111,7 @@
 {markingAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Marking">>]]}}.
 
 {tableMarking, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Marking">>],
+    [[[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"Marking">>]],
     [{1, [<<"MarkingKey">>]},
     {2, [<<"MarkingEnable">>]},
     {3, [<<"MarkingStatus">>]},
@@ -127,7 +127,7 @@
 {availableInterfaceNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"AvailableInterfaceNumberOfEntries">>]]}}.
 
 {tableAvailableInterface, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"AvailableInterface">>],
+    [[[<<"InternetGatewayDevice">>, <<"Layer2Bridging">>, <<"AvailableInterface">>]],
     [{1, [<<"AvailableInterfaceKey">>]},
     {2, [<<"InterfaceType">>]},
     {3, [<<"InterfaceReference">>]}]]}}.
@@ -159,7 +159,7 @@
 {lanHostConfigManagementIPInterfaceNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterfaceNumberOfEntries">>]]}}.
 {lanHostConfigManagementIPInterfaceAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterface">>]]}}.
 {tableLANHostConfigManagementIpInterface, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterface">>],
+    [[[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANHostConfigManagement">>, <<"IPInterface">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"IPInterfaceIPAddress">>]},
@@ -169,7 +169,7 @@
 
 {lanEthernetInterfaceConfigNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANEthernetInterfaceNumberOfEntries">>]]}}.
 {tableLANEthernetInterfaceConfig, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANEthernetInterfaceConfig">>],
+    [[[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"LANEthernetInterfaceConfig">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"Status">>]},
@@ -196,7 +196,7 @@
 
 {lanDeviceHostsNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"Hosts">>, <<"HostNumberOfEntries">>]]}}.
 {tableLANDeviceHosts, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"Hosts">>, <<"Host">>],
+    [[[<<"InternetGatewayDevice">>, <<"LANDevice">>, <<"1">>, <<"Hosts">>, <<"Host">>]],
     [{1, index},
     {2, [<<"IPAddress">>]},
     {3, [<<"AddressSource">>]},
@@ -226,7 +226,7 @@
 {wanIPConnectionNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnectionNumberOfEntries">>]]}}.
 {wanIPConnectionAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>]]}}.
 {tableWANIPConnection, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>],
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"Reset">>]},
@@ -274,7 +274,7 @@
     {45, {add, [<<"PortMapping">>]}},
     {46, remove} ]]}}.
 
-{tableWANIPConnectionDHCPClientSentDHCPOptions, {snmp_funcs, handle_child_table,
+{tableWANIPConnectionDHCPClientSentDHCPOptions, {snmp_funcs, handle_table,
     [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"DHCPClient">>, <<"SentDHCPOption">>]],
     [{1, index},
     {2, parent_index},
@@ -283,7 +283,7 @@
     {5, [<<"Value">>]},
     {6, remove}] ]}}.
 
-{tableWANIPConnectionDHCPClientReqDHCPOptions, {snmp_funcs, handle_child_table,
+{tableWANIPConnectionDHCPClientReqDHCPOptions, {snmp_funcs, handle_table,
     [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"DHCPClient">>, <<"ReqDHCPOption">>]],
     [{1, index},
     {2, parent_index},
@@ -293,7 +293,7 @@
     {6, [<<"Value">>]},
     {7, remove}] ]}}.
 
-{tableWANIPConnectionPortMapping, {snmp_funcs, handle_child_table,
+{tableWANIPConnectionPortMapping, {snmp_funcs, handle_table,
     [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANIPConnection">>], [<<"PortMapping">>]],
     [{1, index},
     {2, parent_index},
@@ -310,7 +310,7 @@
 {wanDevicePPPConnectionNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnectionNumberOfEntries">>]]}}.
 {wanDevicePPPConnectionAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>]]}}.
 {tableWANDevicePPPConnection, {snmp_funcs, handle_table,
-    [[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>],
+    [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>]],
     [{1, index},
     {2, [<<"Enable">>]},
     {3, [<<"Reset">>]},
@@ -358,7 +358,7 @@
     {45, {add, [<<"PortMapping">>]}},
     {46, remove}  ]]}}.
 
-{tableWANPPPConnectionPortMapping, {snmp_funcs, handle_child_table,
+{tableWANPPPConnectionPortMapping, {snmp_funcs, handle_table,
     [[[<<"InternetGatewayDevice">>, <<"WANDevice">>, <<"1">>, <<"WANConnectionDevice">>, <<"1">>, <<"WANPPPConnection">>], [<<"PortMapping">>]],
     [{1, index},
     {2, parent_index},

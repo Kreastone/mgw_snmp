@@ -63,8 +63,8 @@ test() ->
       Res = start_snmp(List_Config),
       io:format("start snmp: ~p~n", [Res]),
       Priv = code:priv_dir(mgw_snmp),
-      ResLoad = snmpa:load_mib(Priv ++ "/MINI-MGW"),
-      io:format("snmpa:load_mib: ~p~n", [ResLoad]),
+      snmpa:load_mib(Priv ++ "/MINI-MGW"),
+      snmpa:load_mib(Priv ++ "/MINI-MGW-SIP"),
       io:format("community read: public~n"),
       io:format("community write: all-right~n"),
       io:format("port: 4000~n");
@@ -127,7 +127,7 @@ handle_call([get_list_index, Table_Path], _From, State) ->
     (Diff_Time < 2000000) andalso (State#state.name_table == Table_Path) ->
       {reply, State#state.list_indexes, State};
     true ->
-      List_Indexes = get_list_index(Table_Path),
+      List_Indexes = get_list_index_all(Table_Path, []),
       {reply, List_Indexes,
         #state{
           status_task = State#state.status_task,
@@ -144,34 +144,43 @@ handle_call(_Request, _From, State) ->
 
 %%======================================================================
 
-get_list_index([Start_Path, End_Path]) when is_list(Start_Path), is_list(End_Path) ->
-  List_Objects_Parent = snmp_funcs:get_field(Start_Path),
-  parse_list_parent_index(lists:reverse(List_Objects_Parent), Start_Path, End_Path, 1, []);
-get_list_index(Table_Path) ->
-  List_Objects = snmp_funcs:get_field(Table_Path),
-  parse_list_index(lists:reverse(List_Objects), 1, []).
-parse_list_index([], _Current_Index, Res) ->
+get_list_index_all([], Res) ->
   Res;
-parse_list_index([Object|Table_Objects], Current_Index, Res) when is_record(Object, object) ->
-  parse_list_index(Table_Objects, Current_Index+1, Res ++ [{Current_Index, Object#object.index}]);
-parse_list_index(_, _, _) ->
+get_list_index_all([Path|Table_Path], Res) ->
+  case get_res_index(Path, Res) of
+    [] -> [];
+    New_Res -> get_list_index_all(Table_Path, New_Res)
+  end.
+
+get_res_index(Path, []) ->
+  List_Objects = snmp_funcs:get_field(Path),
+  parse_index_first(List_Objects, Path, []);
+get_res_index(Path, Res) ->
+  parse_index_next(Res, Path, []).
+
+parse_index_first([], _, Res) ->
+  lists:sort(Res);
+parse_index_first([Object|Objects], Path, Res) when is_record(Object, object) ->
+  Index = Object#object.index,
+  parse_index_first(Objects, Path, Res ++ [[[Index], Path]]);
+parse_index_first(_, _, _) ->
   [].
 
-parse_list_parent_index([], _Start_Path, _End_Path, _Current_Index, Res) ->
+parse_index_next([], _, Res) ->
+  lists:sort(Res);
+parse_index_next([[Cur_Index, Cur_Path]|Path_Index], Path, Res) ->
+  Address = Cur_Path ++ [list_to_binary(integer_to_list(lists:last(Cur_Index)))] ++ Path,
+  List_Objects = snmp_funcs:get_field(Address),
+  New_Res = get_new_res(List_Objects, Address, Cur_Index, []),
+  parse_index_next(Path_Index, Path, Res ++ New_Res).
+
+get_new_res([], _, _, Res) ->
   Res;
-parse_list_parent_index([Object|Table_Objects], Start_Path, End_Path, Current_Index, Res) when is_record(Object, object) ->
-  Parent_Index = Object#object.index,
-  List_Objects_Child = snmp_funcs:get_field(Start_Path ++ [list_to_binary(integer_to_list(Parent_Index))] ++ End_Path),
-  Result_Parent = get_lists_index(List_Objects_Child, Parent_Index, Current_Index, []),
-  parse_list_parent_index(Table_Objects, Start_Path, End_Path, Current_Index + lists:flatlength(Result_Parent), Res ++ Result_Parent );
-parse_list_parent_index(_, _, _, _, _) ->
-  [].
-get_lists_index([], _Parent_Index, _Current_Index, Res) ->
-  Res;
-get_lists_index([Object|Table_Objects_Child], Parent_Index, Current_Index, Res) when is_record(Object, object) ->
-  get_lists_index(Table_Objects_Child, Parent_Index, Current_Index+1, Res ++ [{Current_Index, {Parent_Index, Object#object.index}}]);
-get_lists_index(_, _, _, _) ->
-  [].
+get_new_res([Object|Objects], Address, Cur_Index, Res) when is_record(Object, object) ->
+  Index = Object#object.index,
+  New_Index = Cur_Index ++ [Index],
+  New_Res = Res ++ [[New_Index, Address]],
+  get_new_res(Objects, Address, Cur_Index, New_Res).
 
 %%======================================================================
 -spec(handle_cast(Request :: term(), State :: #state{}) ->
