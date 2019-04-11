@@ -274,7 +274,9 @@ parse_string_field(Elem) when is_record(Elem#parameter.value, mfa) ->
   binary:bin_to_list(Val);
 parse_string_field(Elem) when is_list(Elem#parameter.value) ->
   lists:foldl(fun(X, ACC) ->
-    binary:bin_to_list(X) ++ " " ++ ACC
+    if is_binary(X) -> binary:bin_to_list(X) ++ " " ++ ACC;
+      is_integer(X) -> integer_to_list(X) ++ " " ++ ACC;
+      true -> "undefined " ++ ACC end
               end, [], Elem#parameter.value);
 parse_string_field(Elem) when Elem#parameter.value == <<>> ->
   " ";
