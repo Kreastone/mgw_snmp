@@ -1,0 +1,2517 @@
+------------------------------------------------
+
+MINI-MGW-SIP        DEFINITIONS ::= BEGIN
+
+IMPORTS
+      enterprises, Integer32, Unsigned32
+        FROM SNMPv2-SMI
+      DisplayString  FROM RFC1213-MIB
+      OBJECT-TYPE    FROM RFC-1212;
+
+------------------------------------------------
+
+Boolean ::= INTEGER { true (1), false (0) }
+
+------------------------------------------------
+
+npoTelecom              	OBJECT IDENTIFIER ::= { enterprises 40248 }
+minimgw                 	OBJECT IDENTIFIER ::= { npoTelecom 5 }
+services   					OBJECT IDENTIFIER ::= { minimgw 2 }
+voiceService   				OBJECT IDENTIFIER ::= { services 1 }
+
+------------------------------------------------
+
+capabilities				OBJECT IDENTIFIER ::= { voiceService 1 }
+
+------------------------------------------------
+
+capabilitiesMaxProfileCount OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Maximum number of entries in the VoIPProfile table."
+    ::= { capabilities 1 }
+	
+------------------------------------------------
+	
+capabilitiesMaxLineCount OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Maximum total number of CallControl.Line objects supported.
+		A value of -1 indicates no specific limit on the number of lines."
+    ::= { capabilities 2 }
+	
+------------------------------------------------
+	
+capabilitiesMaxSessionsPerLine OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Maximum number of voice sessions supported for any given CallControl.Line object. 
+		A value greater than one indicates support for CPE-provided conference calling.
+		
+		A value of -1 indicates no specific limit on the number of voice sessions per line."
+    ::= { capabilities 3 }
+	
+------------------------------------------------
+	
+capabilitiesMaxSessionCount OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Maximum total number of voice sessions supported across all CallControl.Line objects. 
+		(This might differ from MaxLineCount if each line can support more than one session for
+		CPE-provided conference calling. This value MAY be less than the product of MaxLineCount 
+		and MaxSessionsPerLine.)
+
+		A value of -1 indicates no specific limit on the number of voice sessions."
+    ::= { capabilities 4 }
+	
+------------------------------------------------
+	
+capabilitiesSignalingProtocols OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of strings. Each item is a supported network connection mode."
+    ::= { capabilities 5 }
+	
+------------------------------------------------
+	
+capabilitiesRegions OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of strings. Each item is a supported Regions."
+    ::= { capabilities 6 }
+	
+------------------------------------------------
+	
+capabilitiesRTCP OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable RTCP."
+    ::= { capabilities 7 }
+	
+------------------------------------------------
+	
+capabilitiesSRTP OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable the use of SRTP.
+
+		If RTCP is enabled, a true value of this parameter also implies the use of SRTCP."
+    ::= { capabilities 8 }
+	
+------------------------------------------------
+	
+capabilitiesSRTPKeyingMethods OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of strings, available keying methods."
+    ::= { capabilities 9 }
+	
+------------------------------------------------
+	
+capabilitiesSRTPEncryptionKeySizes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Comma-separated list of unsigned integers, available encryption key sizes."
+    ::= { capabilities 10 }
+	
+------------------------------------------------
+	
+capabilitiesRTPRedundancy OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable the use of RTP payload redundancy."
+    ::= { capabilities 11 }
+	
+------------------------------------------------
+	
+capabilitiesDSCPCoupled OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 12 }
+	
+------------------------------------------------
+	
+capabilitiesEthernetTaggingCoupled OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 13 }
+	
+------------------------------------------------
+	
+capabilitiesPSTNSoftSwitchOver OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 14 }
+	
+------------------------------------------------
+	
+capabilitiesFaxT38 OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable the use of Fax T38."
+    ::= { capabilities 15 }
+	
+------------------------------------------------
+	
+capabilitiesFaxPassThrough OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable the use for pass-through of fax data."
+    ::= { capabilities 16 }
+	
+------------------------------------------------
+	
+capabilitiesModemPassThrough OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        "Enable or disable the use for pass-through of modem data."
+    ::= { capabilities 17 }
+	
+------------------------------------------------
+	
+capabilitiesToneGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 18 }
+	
+------------------------------------------------
+	
+capabilitiesToneDescriptionsEditable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 19 }
+	
+------------------------------------------------
+	
+capabilitiesPatternBasedToneGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 20 }
+	
+------------------------------------------------
+	
+capabilitiesFileBasedToneGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 21 }
+	
+------------------------------------------------
+	
+capabilitiesToneFileFormats OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 22 }
+	
+------------------------------------------------
+	
+capabilitiesRingGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 23 }
+	
+------------------------------------------------
+	
+capabilitiesRingDescriptionsEditable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 24 }
+	
+------------------------------------------------
+	
+capabilitiesPatternBasedRingGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 25 }
+	
+------------------------------------------------
+	
+capabilitiesRingPatternEditable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 26 }
+	
+------------------------------------------------
+	
+capabilitiesFileBasedRingGeneration OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 27 }
+	
+------------------------------------------------
+	
+capabilitiesRingFileFormats OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 28 }
+	
+------------------------------------------------
+	
+capabilitiesDigitMap OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 29 }
+	
+------------------------------------------------
+	
+capabilitiesNumberingPlan OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 30 }
+	
+------------------------------------------------
+	
+capabilitiesButtonMap OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 31 }
+	
+------------------------------------------------
+	
+capabilitiesVoicePortTests OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 32 }
+	
+------------------------------------------------
+
+capabilitiesSIP		OBJECT IDENTIFIER ::= { capabilities 33 }
+
+------------------------------------------------
+	
+capabilitiesSIPRole OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 1 }
+	
+------------------------------------------------
+	
+capabilitiesSIPExtensions OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 2 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTransports OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 3 }
+	
+------------------------------------------------
+	
+capabilitiesSIPURISchemes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 4 }
+	
+------------------------------------------------
+	
+capabilitiesSIPEventSubscription OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 5 }
+	
+------------------------------------------------
+	
+capabilitiesSIPResponseMap OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 6 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTLSAuthenticationProtocols OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 7 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTLSAuthenticationKeySizes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 8 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTLSEncryptionProtocols OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 9 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTLSEncryptionKeySizes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 10 }
+	
+------------------------------------------------
+	
+capabilitiesSIPTLSKeyExchangeProtocols OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilitiesSIP 11 }
+	
+------------------------------------------------
+-- Capability Codecs TABLE
+------------------------------------------------
+
+tableCapabilityCodecs OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesCapabilityCodecs
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { capabilities 34 }
+
+--------
+
+entriesCapabilityCodecs OBJECT-TYPE
+    SYNTAX  EntriesCapabilityCodecs
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { capabilityCodecsEntryID }
+    ::= { tableCapabilityCodecs 1 }
+
+--------
+
+EntriesCapabilityCodecs ::=
+    SEQUENCE
+    {
+        capabilityCodecsEntryID   				Unsigned32,
+        capabilityCodecsCodec    				DisplayString,
+        capabilityCodecsBitRate  				Unsigned32,
+        capabilityCodecsPacketizationPeriod   	DisplayString,
+		capabilityCodecsSilenceSuppression		Boolean
+    }
+
+------------------------------------------------
+
+capabilityCodecsEntryID OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesCapabilityCodecs 1 }
+
+------------------------------------------------
+
+capabilityCodecsCodec OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesCapabilityCodecs 2 }
+
+------------------------------------------------
+
+capabilityCodecsBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesCapabilityCodecs 3 }
+
+------------------------------------------------
+
+capabilityCodecsPacketizationPeriod OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesCapabilityCodecs 4 }
+
+------------------------------------------------
+
+capabilityCodecsSilenceSuppression OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesCapabilityCodecs 5 }
+
+------------------------------------------------
+
+voiceProfile				OBJECT IDENTIFIER ::= { voiceService 2 }
+
+------------------------------------------------
+
+voiceProfileNumberOfEntries OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 1 }
+
+------------------------------------------------
+
+voiceProfileAddNewEntry OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 2 }
+
+------------------------------------------------
+-- Voice Profile TABLE
+------------------------------------------------
+
+tableVoiceProfile OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfile
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 3 }
+
+--------
+
+entriesVoiceProfile OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfile
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileIndex }
+    ::= { tableVoiceProfile 1 }
+
+--------
+
+EntriesVoiceProfile ::=
+    SEQUENCE
+    {
+        voiceProfileIndex   					Unsigned32,
+        voiceProfileEnable    					DisplayString,
+        voiceProfileReset  						Boolean,
+        voiceProfileName   						DisplayString,
+		voiceProfileSignalingProtocol			Unsigned32,
+		voiceProfileMaxSessions					Unsigned32,
+		voiceProfileDTMFMethod					DisplayString,
+		voiceProfileDTMFMethodG711				DisplayString,
+		voiceProfileRegion						DisplayString,
+		voiceProfileDigitMap					DisplayString,
+		voiceProfileDigitMapEnable				Boolean,
+		voiceProfileSTUNEnable					Boolean,
+		voiceProfileSTUNServer					DisplayString,
+		voiceProfileFaxPassThrough				DisplayString,
+		voiceProfileModemPassThrough			DisplayString,
+		voiceProfileServiceProviderInfoName		DisplayString,
+		voiceProfileServiceProviderInfoURL		DisplayString,
+		voiceProfileServiceProviderInfoContactPhoneNumber		DisplayString,
+		voiceProfileServiceProviderInfoEmailAddress		DisplayString,
+		voiceProfileRtpLocalPortMin				Unsigned32,
+		voiceProfileRtpLocalPortMax				Unsigned32,
+		voiceProfileRtpDSCPMark					Unsigned32,
+		voiceProfileRtpVLANIDMark				Integer32,
+		voiceProfileRtpEthernetPriorityMark		Integer32,
+		voiceProfileRtpTelephoneEventPayloadType		Unsigned32,
+		voiceProfileRtpRtcpEnable				Boolean,
+		voiceProfileRtpRtcpTxRepeatInterval		Unsigned32,
+		voiceProfileRtpRtcpLocalCName			DisplayString,
+		voiceProfileRtpSrtpEnable				Boolean,
+		voiceProfileRtpSrtpKeyingMethods		DisplayString,
+		voiceProfileRtpSrtpEncryptionKeySizes	DisplayString,
+		voiceProfileRtpRedundancyEnable			Boolean,
+		voiceProfileRtpRedundancyPayloadType	Unsigned32,
+		voiceProfileRtpRedundancyBlockPayloadType	Unsigned32,
+		voiceProfileRtpFaxAndModemRedundancy	INTEGER,
+		voiceProfileRtpModemRedundancy			INTEGER,
+		voiceProfileRtpDTMFRedundancy			INTEGER,
+		voiceProfileRtpVoiceRedundancy			INTEGER,
+		voiceProfileRtpMaxSessionsUsingRedundancy		Unsigned32,
+		voiceProfileFaxT38Enable				Boolean,
+		voiceProfileFaxT38BitRate				Unsigned32,
+		voiceProfileFaxT38HighSpeedPacketRate		Unsigned32,
+		voiceProfileFaxT38HighSpeedRedundancy		Unsigned32,
+		voiceProfileFaxT38LowSpeedRedundancy		Unsigned32,
+		voiceProfileFaxT38TCFMethod				DisplayString,
+		voiceProfileSipNumberOfEntries			Unsigned32,
+		voiceProfileSipAddNewEntry				Integer32,
+		voiceProfileLineNumberOfEntries			Unsigned32,
+		voiceProfileRemoveEntry					Integer32
+    }
+
+------------------------------------------------
+
+voiceProfileIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 1 }
+	
+------------------------------------------------
+
+voiceProfileEnable OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 2 }
+
+------------------------------------------------
+
+voiceProfileReset OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 3 }
+
+------------------------------------------------
+
+voiceProfileName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 4 }
+
+------------------------------------------------
+
+voiceProfileSignalingProtocol OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 5 }
+
+------------------------------------------------
+
+voiceProfileMaxSessions OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 6 }
+
+------------------------------------------------
+
+voiceProfileDTMFMethod OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 7 }
+	
+------------------------------------------------
+
+voiceProfileDTMFMethodG711 OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 8 }	
+	
+------------------------------------------------
+
+voiceProfileRegion OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 9 }	
+	
+------------------------------------------------
+
+voiceProfileDigitMap OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 10 }	
+		
+------------------------------------------------
+
+voiceProfileDigitMapEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 11 }	
+
+------------------------------------------------
+
+voiceProfileSTUNEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 12 }	
+	
+------------------------------------------------
+
+voiceProfileSTUNServer OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 13 }	
+	
+------------------------------------------------
+
+voiceProfileFaxPassThrough OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 14 }	
+	
+------------------------------------------------
+
+voiceProfileModemPassThrough OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 15 }		
+	
+------------------------------------------------
+
+voiceProfileServiceProviderInfoName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 16 }		
+	
+------------------------------------------------
+
+voiceProfileServiceProviderInfoURL OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 17 }	
+	
+------------------------------------------------
+
+voiceProfileServiceProviderInfoContactPhoneNumber OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 18 }	
+	
+------------------------------------------------
+
+voiceProfileServiceProviderInfoEmailAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 19 }	
+	
+------------------------------------------------
+
+voiceProfileRtpLocalPortMin OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 20 }	
+
+------------------------------------------------
+
+voiceProfileRtpLocalPortMax OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 21 }
+	
+------------------------------------------------
+
+voiceProfileRtpDSCPMark OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 22 }
+		
+------------------------------------------------
+
+voiceProfileRtpVLANIDMark OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 23 }	
+	
+------------------------------------------------
+
+voiceProfileRtpEthernetPriorityMark OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 24 }	
+	
+------------------------------------------------
+
+voiceProfileRtpTelephoneEventPayloadType OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 25 }	
+
+------------------------------------------------
+
+voiceProfileRtpRtcpEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 26 }	
+
+------------------------------------------------
+
+voiceProfileRtpRtcpTxRepeatInterval OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 27 }	
+
+------------------------------------------------
+
+voiceProfileRtpRtcpLocalCName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 28 }	
+
+------------------------------------------------
+
+voiceProfileRtpSrtpEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 29 }	
+
+------------------------------------------------
+
+voiceProfileRtpSrtpKeyingMethods OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 30 }	
+
+------------------------------------------------
+
+voiceProfileRtpSrtpEncryptionKeySizes OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 31 }	
+
+------------------------------------------------
+
+voiceProfileRtpRedundancyEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 32 }	
+
+------------------------------------------------
+
+voiceProfileRtpRedundancyPayloadType OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 33 }	
+
+------------------------------------------------
+
+voiceProfileRtpRedundancyBlockPayloadType OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+     ""
+    ::= { entriesVoiceProfile 34 }
+
+------------------------------------------------
+
+voiceProfileRtpFaxAndModemRedundancy OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 35 }
+
+------------------------------------------------
+
+voiceProfileRtpModemRedundancy OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 36 }
+
+------------------------------------------------
+
+voiceProfileRtpDTMFRedundancy OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 37 }
+
+------------------------------------------------
+
+voiceProfileRtpVoiceRedundancy OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 38 }
+
+------------------------------------------------
+
+voiceProfileRtpMaxSessionsUsingRedundancy OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 39 }
+
+------------------------------------------------
+
+voiceProfileFaxT38Enable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 40 }
+
+------------------------------------------------
+
+voiceProfileFaxT38BitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 41 }
+
+------------------------------------------------
+
+voiceProfileFaxT38HighSpeedPacketRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 42 }
+
+------------------------------------------------
+
+voiceProfileFaxT38HighSpeedRedundancy OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 43 }
+
+------------------------------------------------
+
+voiceProfileFaxT38LowSpeedRedundancy OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 44 }
+
+------------------------------------------------
+
+voiceProfileFaxT38TCFMethod OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfile 45 }
+
+------------------------------------------------
+
+voiceProfileSipNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   ::= { entriesVoiceProfile 46 }
+
+------------------------------------------------
+
+voiceProfileSipAddNewEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   ::= { entriesVoiceProfile 47 }
+	
+------------------------------------------------
+
+voiceProfileLineNumberOfEntries OBJECT-TYPE
+   SYNTAX  Unsigned32
+   ACCESS  read-only
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   ::= { entriesVoiceProfile 48 }
+   
+voiceProfileRemoveEntry OBJECT-TYPE
+   SYNTAX  Integer32
+   ACCESS  write-only
+   STATUS  mandatory
+   DESCRIPTION
+       ""
+   ::= { entriesVoiceProfile 49 }
+	
+------------------------------------------------
+-- SIP TABLE
+------------------------------------------------
+
+tableVoiceProfileSIP OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileSIP
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 4 }
+
+--------
+
+entriesVoiceProfileSIP OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileSIP
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileSIPIndex }
+    ::= { tableVoiceProfileSIP 1 }
+
+--------
+
+EntriesVoiceProfileSIP ::=
+    SEQUENCE
+    {
+        voiceProfileSIPIndex   					Unsigned32,
+        voiceProfileSIPParentIndex    			Unsigned32,
+        voiceProfileSIPProxyServer  			DisplayString,
+        voiceProfileSIPProxyServerPort   		Unsigned32,
+		voiceProfileSIPProxyServerTransport		DisplayString,
+		voiceProfileSIPRegistrarServer			DisplayString,
+		voiceProfileSIPRegistrarServerPort		Unsigned32,
+		voiceProfileSIPRegistrarServerTransport		DisplayString,
+		voiceProfileSIPUserAgentDomain			DisplayString,
+		voiceProfileSIPUserAgentPort			Unsigned32,
+		voiceProfileSIPUserAgentTransport		DisplayString,
+		voiceProfileSIPOutboundProxy			DisplayString,
+		voiceProfileSIPOutboundProxyPort		Unsigned32,
+		voiceProfileSIPOrganization				DisplayString,
+		voiceProfileSIPRegistrationPeriod		INTEGER,
+		voiceProfileSIPTimerT1					INTEGER,
+		voiceProfileSIPTimerT2					INTEGER,
+		voiceProfileSIPTimerT4					INTEGER,
+		voiceProfileSIPTimerA					INTEGER,
+		voiceProfileSIPTimerB					INTEGER,
+		voiceProfileSIPTimerC					INTEGER,
+		voiceProfileSIPTimerD					INTEGER,
+		voiceProfileSIPTimerE					INTEGER,
+		voiceProfileSIPTimerF					INTEGER,
+		voiceProfileSIPTimerG					INTEGER,
+		voiceProfileSIPTimerH					INTEGER,
+		voiceProfileSIPTimerI					INTEGER,
+		voiceProfileSIPTimerJ					INTEGER,
+		voiceProfileSIPTimerK					INTEGER,
+		voiceProfileSIPInviteExpires			INTEGER,
+		voiceProfileSIPReInviteExpires			INTEGER,
+		voiceProfileSIPRegisterExpires			INTEGER,
+		voiceProfileSIPRegistersMinExpires		INTEGER,
+		voiceProfileSIPRegisterRetryInterval	INTEGER,
+		voiceProfileSIPInboundAuth				DisplayString,
+		voiceProfileSIPInboundAuthUsername		DisplayString,
+		voiceProfileSIPInboundAuthPassword		DisplayString,
+		voiceProfileSIPUseCodecPriorityInSDPResponse		Boolean,
+		voiceProfileSIPDSCPMark					Unsigned32,
+		voiceProfileSIPVLANIDMark				Integer32,
+		voiceProfileSIPEthernetPriorityMark		INTEGER,
+		voiceProfileSIPEventSubscribeNumberOfElements	Unsigned32,
+		voiceProfileSIPEventSubscribeAddNewEntry		Integer32,
+		voiceProfileSIPResponseMapNumberOfElements		Unsigned32,
+		voiceProfileSIPResponseMapAddNewEntry			Integer32,
+		voiceProfileSIPRemoveEntry				Integer32	
+    }
+------------------------------------------------
+
+voiceProfileSIPIndex OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-only
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 1 }
+
+------------------------------------------------
+
+voiceProfileSIPParentIndex OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-only
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 2 }
+
+------------------------------------------------
+
+voiceProfileSIPProxyServer OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 3 }
+
+------------------------------------------------
+
+voiceProfileSIPProxyServerPort OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 4 }
+
+------------------------------------------------
+
+voiceProfileSIPProxyServerTransport OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 5 }
+
+------------------------------------------------
+
+voiceProfileSIPRegistrarServer OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 6 }
+
+------------------------------------------------
+
+voiceProfileSIPRegistrarServerPort OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 7 }
+
+------------------------------------------------
+
+voiceProfileSIPRegistrarServerTransport OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 8 }
+
+------------------------------------------------
+
+voiceProfileSIPUserAgentDomain OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 9 }
+
+------------------------------------------------
+
+voiceProfileSIPUserAgentPort OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 10 }
+
+------------------------------------------------
+
+voiceProfileSIPUserAgentTransport OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 11 }
+
+------------------------------------------------
+
+voiceProfileSIPOutboundProxy OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 12 }
+
+------------------------------------------------
+
+voiceProfileSIPOutboundProxyPort OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 13 }	
+	
+------------------------------------------------
+
+voiceProfileSIPOrganization OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 14 }	
+		
+------------------------------------------------
+
+voiceProfileSIPRegistrationPeriod OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 15 }	
+		
+------------------------------------------------
+
+voiceProfileSIPTimerT1 OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 16 }	
+		
+------------------------------------------------
+
+voiceProfileSIPTimerT2 OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 17 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerT4 OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 18 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerA OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 19 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerB OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 20 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerC OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 21 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerD OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 22 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerE OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 23 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerF OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 24 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerG OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 25 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerH OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 26 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerI OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 27 }
+		
+------------------------------------------------
+
+voiceProfileSIPTimerJ OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 28 }
+	
+------------------------------------------------
+
+voiceProfileSIPTimerK OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 29 }
+	
+------------------------------------------------
+
+voiceProfileSIPInviteExpires OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 30 }
+	
+------------------------------------------------
+
+voiceProfileSIPReInviteExpires OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 31 }
+	
+------------------------------------------------	
+
+voiceProfileSIPRegisterExpires OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 32 }
+	
+------------------------------------------------		
+
+voiceProfileSIPRegistersMinExpires OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 33 }
+	
+------------------------------------------------		
+
+voiceProfileSIPRegisterRetryInterval OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 34 }
+	
+------------------------------------------------	
+
+voiceProfileSIPInboundAuth OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 35 }
+	
+------------------------------------------------
+
+voiceProfileSIPInboundAuthUsername OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 36 }
+	
+------------------------------------------------
+	
+voiceProfileSIPInboundAuthPassword OBJECT-TYPE
+	SYNTAX  DisplayString
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 37 }
+	
+------------------------------------------------
+
+voiceProfileSIPUseCodecPriorityInSDPResponse OBJECT-TYPE
+	SYNTAX  Boolean
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 38 }
+	
+------------------------------------------------
+
+voiceProfileSIPDSCPMark OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 39 }
+	
+------------------------------------------------	
+
+voiceProfileSIPVLANIDMark OBJECT-TYPE
+	SYNTAX  Integer32
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 40 }
+	
+------------------------------------------------
+
+voiceProfileSIPEthernetPriorityMark OBJECT-TYPE
+	SYNTAX  INTEGER
+	ACCESS  read-write
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 41 }
+	
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeNumberOfElements OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-only
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 42 }
+	
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIP 43 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapNumberOfElements OBJECT-TYPE
+	SYNTAX  Unsigned32
+	ACCESS  read-only
+	STATUS  mandatory
+	DESCRIPTION
+		""
+	::= { entriesVoiceProfileSIP 44 }
+	
+------------------------------------------------
+
+voiceProfileSIPResponseMapAddNewEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIP 45 }
+
+------------------------------------------------
+
+voiceProfileSIPRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIP 46 }
+	
+
+------------------------------------------------
+-- Event Subscribe TABLE
+------------------------------------------------
+
+tableVoiceProfileSIPEventSubscribe OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileSIPEventSubscribe
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 5 }
+
+--------
+
+entriesVoiceProfileSIPEventSubscribe OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileSIPEventSubscribe
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileSIPEventSubscribeIndex }
+    ::= { tableVoiceProfileSIPEventSubscribe 1 }
+
+--------
+
+EntriesVoiceProfileSIPEventSubscribe ::=
+    SEQUENCE
+    {
+        voiceProfileSIPEventSubscribeIndex   					Unsigned32,
+        voiceProfileSIPEventSubscribeParentIndex    			Unsigned32,
+        voiceProfileSIPEventSubscribeEvent  					OCTET STRING,
+        voiceProfileSIPEventSubscribeNotifier   				OCTET STRING,
+		voiceProfileSIPEventSubscribeNotifierPort				Unsigned32,
+		voiceProfileSIPEventSubscribeNotifierTransport			OCTET STRING,
+		voiceProfileSIPEventSubscribeExpireTime					Unsigned32,
+		voiceProfileSIPEventSubscribeRemoveEntry				Integer32
+    }
+
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 1 }
+
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeParentIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 2 }
+
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeEvent OBJECT-TYPE
+    SYNTAX  OCTET STRING (SIZE(0..32))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 3 }
+
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeNotifier OBJECT-TYPE
+    SYNTAX  OCTET STRING (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 4 }
+	
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeNotifierPort OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 5 }	
+	
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeNotifierTransport OBJECT-TYPE
+    SYNTAX  OCTET STRING (SIZE(0..256))
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 6 }	
+	
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeExpireTime OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 7 }
+
+------------------------------------------------
+
+voiceProfileSIPEventSubscribeRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPEventSubscribe 8 }
+
+------------------------------------------------
+-- Response Map TABLE
+------------------------------------------------
+
+tableVoiceProfileSIPResponseMap OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileSIPResponseMap
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 6 }
+
+--------
+
+entriesVoiceProfileSIPResponseMap OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileSIPResponseMap
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileSIPResponseMapIndex }
+    ::= { tableVoiceProfileSIPResponseMap 1 }
+
+--------
+
+EntriesVoiceProfileSIPResponseMap ::=
+    SEQUENCE
+    {
+        voiceProfileSIPResponseMapIndex   					Unsigned32,
+        voiceProfileSIPResponseMapParentIndex    			Unsigned32,
+        voiceProfileSIPResponseMapNumber  					Integer32,
+        voiceProfileSIPResponseMapTextMessage   			DisplayString,
+		voiceProfileSIPResponseMapTone						Unsigned32,
+		voiceProfileSIPResponseMapRemoveEntry				Integer32
+    }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 1 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapParentIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 2 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapNumber OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 3 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapTextMessage OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 4 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapTone OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 5 }
+
+------------------------------------------------
+
+voiceProfileSIPResponseMapRemoveEntry OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  write-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileSIPResponseMap 6 }
+
+------------------------------------------------
+-- Line TABLE
+------------------------------------------------
+
+tableVoiceProfileLine OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileLine
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 7 }
+
+--------
+
+entriesVoiceProfileLine OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileLine
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileLineIndex }
+    ::= { tableVoiceProfileLine 1 }
+
+--------
+
+EntriesVoiceProfileLine ::=
+    SEQUENCE
+    {
+        voiceProfileLineIndex   					Unsigned32,
+		voiceProfileLineParentIndex   				Unsigned32,
+        voiceProfileLineEnable    					DisplayString,
+        voiceProfileLineDirectoryNumber  			DisplayString,
+        voiceProfileLineStatus   					DisplayString,
+		voiceProfileLineCallState					DisplayString,
+		voiceProfileLinePhyReferenceList			DisplayString,
+		voiceProfileLineSIPAuthUserName				DisplayString,
+		voiceProfileLineSIPAuthPassword				DisplayString,
+		voiceProfileLineSIPURI						DisplayString,
+		voiceProfileLineVoiceProcessingTransmitGain				Integer32,
+		voiceProfileLineVoiceProcessingReceiveGain				Integer32,
+		voiceProfileLineVoiceProcessingEchoCancellationEnable			Boolean,
+		voiceProfileLineVoiceProcessingEchoCancellationInUse			Boolean,
+		voiceProfileLineVoiceProcessingEchoCancellationTail				Boolean,
+		voiceProfileLineCodecTransmitCodec				DisplayString,
+		voiceProfileLineCodecReceiveCodec				DisplayString,
+		voiceProfileLineCodecTransmitBitRate			Unsigned32,
+		voiceProfileLineCodecReceiveBitRate				Unsigned32,
+		voiceProfileLineCodecTransmitSilenceSuppression				Boolean,
+		voiceProfileLineCodecReceiveSilenceSuppression				Boolean,
+		voiceProfileLineCodecTransmitPacketizationPeriod			Unsigned32
+    }
+------------------------------------------------
+
+voiceProfileLineIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 1 }
+
+------------------------------------------------
+
+voiceProfileLineParentIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 2 }
+
+------------------------------------------------
+
+voiceProfileLineEnable OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 3 }	
+	
+------------------------------------------------
+
+voiceProfileLineDirectoryNumber OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 4 }	
+	
+------------------------------------------------
+
+voiceProfileLineStatus OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 5 }	
+	
+------------------------------------------------
+
+voiceProfileLineCallState OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 6 }	
+	
+------------------------------------------------
+
+voiceProfileLinePhyReferenceList OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 7 }	
+	
+------------------------------------------------
+
+voiceProfileLineSIPAuthUserName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 8 }	
+	
+------------------------------------------------
+
+voiceProfileLineSIPAuthPassword OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 9 }	
+
+------------------------------------------------
+
+voiceProfileLineSIPURI OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 10 }	
+	
+------------------------------------------------
+
+voiceProfileLineVoiceProcessingTransmitGain OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 11 }	
+	
+------------------------------------------------
+
+voiceProfileLineVoiceProcessingReceiveGain OBJECT-TYPE
+    SYNTAX  Integer32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 12 }	
+	
+------------------------------------------------
+
+voiceProfileLineVoiceProcessingEchoCancellationEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 13 }	
+	
+------------------------------------------------
+
+voiceProfileLineVoiceProcessingEchoCancellationInUse OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 14 }	
+	
+------------------------------------------------
+
+voiceProfileLineVoiceProcessingEchoCancellationTail OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 15 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecTransmitCodec OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 16 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecReceiveCodec OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 17 }
+
+------------------------------------------------
+
+voiceProfileLineCodecTransmitBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 18 }
+
+------------------------------------------------
+
+voiceProfileLineCodecReceiveBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 19 }
+
+------------------------------------------------
+
+voiceProfileLineCodecTransmitSilenceSuppression OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 20 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecReceiveSilenceSuppression OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 21 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecTransmitPacketizationPeriod OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLine 22 }
+	
+------------------------------------------------
+-- Line Codec List TABLE
+------------------------------------------------
+
+tableVoiceProfileLineCodecList OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileLineCodecList
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 8 }
+
+--------
+
+entriesVoiceProfileLineCodecList OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileLineCodecList
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileLineCodecListIndex }
+    ::= { tableVoiceProfileLineCodecList 1 }
+
+--------
+
+EntriesVoiceProfileLineCodecList ::=
+    SEQUENCE
+    {
+        voiceProfileLineCodecListIndex   			Unsigned32,
+		voiceProfileLineCodecListParentIndex		Unsigned32,
+        voiceProfileLineCodecListEntryID    		Unsigned32,
+        voiceProfileLineCodecListCodec  			DisplayString,
+        voiceProfileLineCodecListBitRate   					Unsigned32,
+		voiceProfileLineCodecListPacketizationPeriod		DisplayString,
+		voiceProfileLineCodecListSilenceSuppression			Boolean,
+		voiceProfileLineCodecListEnable				Boolean,
+		voiceProfileLineCodecListPriority			Unsigned32
+    }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 1 }
+
+------------------------------------------------
+
+voiceProfileLineCodecListParentIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 2 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListEntryID OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 3 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListCodec OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 4 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListBitRate OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 5 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListPacketizationPeriod OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 6 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListSilenceSuppression OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 7 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListEnable OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 8 }
+	
+------------------------------------------------
+
+voiceProfileLineCodecListPriority OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineCodecList 9 }
+	
+------------------------------------------------
+-- Line Session TABLE
+------------------------------------------------
+
+tableVoiceProfileLineSession OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesVoiceProfileLineSession
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { voiceProfile 9 }
+
+--------
+
+entriesVoiceProfileLineSession OBJECT-TYPE
+    SYNTAX  EntriesVoiceProfileLineSession
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { voiceProfileLineSessionIndex }
+    ::= { tableVoiceProfileLineSession 1 }
+
+--------
+
+EntriesVoiceProfileLineSession ::=
+    SEQUENCE
+    {
+        voiceProfileLineSessionIndex   				Unsigned32,
+		voiceProfileLineSessionParentIndex			Unsigned32,
+        voiceProfileLineSessionStartTime    		DisplayString,
+        voiceProfileLineSessionDuration  			Unsigned32,
+        voiceProfileLineSessionFarEndIPAddress   	DisplayString,
+		voiceProfileLineSessionFarEndUDPPort		Unsigned32,
+		voiceProfileLineSessionLocalUDPPort			Unsigned32
+    }
+	
+------------------------------------------------
+	
+voiceProfileLineSessionIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 1 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionParentIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 2 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionStartTime OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 3 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionDuration OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 4 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionFarEndIPAddress OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 5 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionFarEndUDPPort OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 6 }
+
+------------------------------------------------
+	
+voiceProfileLineSessionLocalUDPPort OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesVoiceProfileLineSession 7 }
+
+------------------------------------------------
+
+phyInterface				OBJECT IDENTIFIER ::= { voiceService 3 }
+	
+------------------------------------------------
+-- PHY Interface TABLE
+------------------------------------------------
+
+tablePhyInterface OBJECT-TYPE
+    SYNTAX  SEQUENCE OF EntriesPhyInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { phyInterface 1 }
+
+--------
+
+entriesPhyInterface OBJECT-TYPE
+    SYNTAX  EntriesPhyInterface
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    INDEX   { phyInterfaceIndex }
+    ::= { tablePhyInterface 1 }
+
+--------
+
+EntriesPhyInterface ::=
+    SEQUENCE
+    {
+        phyInterfaceIndex   				Unsigned32,
+		phyInterfacePhyPort			        DisplayString,
+        phyInterfaceInterfaceID    		    Unsigned32,
+        phyInterfaceDescription  			DisplayString,
+        phyInterfaceTestState   	        DisplayString,
+		phyInterfaceTestSelector		    DisplayString,
+		phyInterfacePhoneConnectivity		Boolean
+    }
+	
+------------------------------------------------
+	
+phyInterfaceIndex OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 1 }
+
+------------------------------------------------
+	
+phyInterfacePhyPort OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 2 }
+	
+------------------------------------------------
+	
+phyInterfaceInterfaceID OBJECT-TYPE
+    SYNTAX  Unsigned32
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 3 }
+	
+------------------------------------------------
+	
+phyInterfaceDescription OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 4 }
+	
+------------------------------------------------
+	
+phyInterfaceTestState OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 5 }
+	
+------------------------------------------------
+	
+phyInterfaceTestSelector OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-write
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 6 }
+	
+------------------------------------------------
+	
+phyInterfacePhoneConnectivity OBJECT-TYPE
+    SYNTAX  Boolean
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+        ""
+    ::= { entriesPhyInterface 7 }
+	
+------------------------------------------------
+	
+END
