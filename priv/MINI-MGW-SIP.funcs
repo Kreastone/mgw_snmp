@@ -52,7 +52,7 @@
   {5, [<<"SilenceSuppression">>]} ]]}}.
 
 {voiceProfileNumberOfEntries, {snmp_funcs, handle_value, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceServiceNumberOfEntries">>]]}}.
-{voiceProfileAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>]]}}.
+{voiceProfileAddNewEntry, {snmp_funcs, add_new_entry, [[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"VoiceProfile">>]]}}.
 
 {tableVoiceProfile, {snmp_funcs, handle_table,
   [[[<<"InternetGatewayDevice">>, <<"Services">>, <<"VoiceService">>, <<"1">>, <<"VoiceProfile">>]],
