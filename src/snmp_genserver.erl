@@ -26,7 +26,7 @@
   code_change/3]).
 
 -define(SERVER, ?MODULE).
--define(TIMEOUT_SAVE, 3000).
+-define(TIMEOUT_SAVE, 5000).
 
 -record(state, {
   time_update = {0,0,0},
@@ -438,15 +438,15 @@ create_file_config(List_Config) ->
     ["./tmp/vacm.conf",
       [
         {vacmSecurityToGroup, usm, "initial", "initial"},
-        {vacmSecurityToGroup, usm, "all-rights", "all-rights"},
+        {vacmSecurityToGroup, usm, CommunityWrite, CommunityWrite},
         {vacmSecurityToGroup, v2c, "initial", "initial"},
-        {vacmSecurityToGroup, v2c, "all-rights", "all-rights"},
+        {vacmSecurityToGroup, v2c, CommunityWrite, CommunityWrite},
         {vacmSecurityToGroup, v1, "initial", "initial"},
-        {vacmSecurityToGroup, v1, "all-rights", "all-rights"},
+        {vacmSecurityToGroup, v1, CommunityWrite, CommunityWrite},
         {vacmAccess, "initial", [], any, noAuthNoPriv, exact, "restricted", [], "restricted"},
         {vacmAccess, "initial", [], usm, authNoPriv, exact, "internet", "internet", "internet"},
         {vacmAccess, "initial", [], usm, authPriv, exact, "internet", "internet", "internet"},
-        {vacmAccess, "all-rights", [], any, noAuthNoPriv, exact, "internet", "internet", "internet"},
+        {vacmAccess, CommunityWrite, [], any, noAuthNoPriv, exact, "internet", "internet", "internet"},
         {vacmViewTreeFamily, "restricted", [1,3,6,1], included, null},
         {vacmViewTreeFamily, "internet", [1,3,6,1], included, null}
       ]]
