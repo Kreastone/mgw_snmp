@@ -81,7 +81,8 @@ start_listen() ->
 %%        false -> snmpc:compile(Priv ++ "/MINI-MGW")
 %%      end,
       Priv = code:priv_dir(mgw_snmp),
-      snmpa:load_mib(Priv ++ "/MINI-MGW");
+      snmpa:load_mib(Priv ++ "/MINI-MGW"),
+      snmpa:load_mib(Priv ++ "/MINI-MGW-SIP");
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
