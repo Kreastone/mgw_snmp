@@ -56,11 +56,11 @@ test() ->
     {<<"DstPortTrap">>, 5000},
     {<<"MaxSize">>, 484},
     {<<"UsmUser">>, <<"initial">>},
-    {<<"AuthProtocol">>, <<"usmNoAuthProtocol">>},
+    {<<"AuthPriv">>, <<"no auth, no priv">>}, %% no auth, no priv | auth, no priv | auth, priv
+    {<<"AuthProtocol">>, <<"md5">>},  %% md5 | sha
     {<<"AuthKey">>, <<"">>},
-    {<<"PrivProtocol">>, <<"usmNoPrivProtocol">>},
-    {<<"PrivKey">>, <<"">>},
-    {<<"ContextName">>, <<"">>}
+    {<<"PrivProtocol">>, <<"des">>},  %% des | aes
+    {<<"PrivKey">>, <<"">>}
   ],
 
   io:format("create list~n"),
@@ -380,11 +380,21 @@ create_file_config(List_Config) ->
   ListDstIPTrap = binary_to_list(proplists:get_value(<<"DstIPAddressTrap">>, List_Config)),
   DstPortTrap = proplists:get_value(<<"DstPortTrap">>, List_Config),
   UsmUser = binary_to_list(proplists:get_value(<<"UsmUser">>, List_Config)),
-  AuthProtocol = list_to_atom(binary_to_list(proplists:get_value(<<"AuthProtocol">>, List_Config))),
-  AuthKey = binary_to_list(proplists:get_value(<<"AuthKey">>, List_Config)),
-  PrivProtocol = list_to_atom(binary_to_list(proplists:get_value(<<"PrivProtocol">>, List_Config))),
-  PrivKey = binary_to_list(proplists:get_value(<<"PrivProtocol">>, List_Config)),
-  ContextName = binary_to_list(proplists:get_value(<<"ContextName">>, List_Config)),
+  AuthPriv = proplists:get_value(<<"AuthPriv">>, List_Config),
+  AuthProtocol = proplists:get_value(<<"AuthProtocol">>, List_Config),
+  AuthKeyString = binary_to_list(proplists:get_value(<<"AuthKey">>, List_Config)),
+  PrivProtocol = proplists:get_value(<<"PrivProtocol">>, List_Config),
+  PrivKeyString = binary_to_list(proplists:get_value(<<"PrivKey">>, List_Config)),
+
+  {AP, A, AKey, P, PKey} =
+    case {AuthPriv, AuthProtocol, PrivProtocol} of
+      {<<"no auth, no priv">>, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""};
+      {<<"auth, no priv">>, <<"md5">>, _} -> {authNoPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized(md5, "telecom", AuthKeyString), usmNoPrivProtocol, ""};
+      {<<"auth, no priv">>, <<"sha">>, _} -> {authNoPriv, usmHMACSHAAuthProtocol, snmp_usm:passwd2localized(sha, "telecom", AuthKeyString), usmNoPrivProtocol, ""};
+      {<<"auth, priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized(md5, "telecom", AuthKeyString), usmDESPrivProtocol, snmp_usm:passwd2localized(md5, "telecom", PrivKeyString)};
+      {<<"auth, priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized(md5, "telecom", AuthKeyString), usmDESPrivProtocol, snmp_usm:passwd2localized(md5, "telecom", PrivKeyString)};
+      {_, _, _, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
+    end,
 
   {ok, DstIPTrap} = inet:parse_address(ListDstIPTrap),
 
@@ -404,7 +414,7 @@ create_file_config(List_Config) ->
       ]],
     ["./tmp/context.conf",
       [
-        ContextName
+        ""
       ]],
     ["./tmp/notify.conf",
       [
@@ -436,21 +446,16 @@ create_file_config(List_Config) ->
       ]],
     ["./tmp/usm.conf",
       [
-        {"kreastone", UsmUser, UsmUser, zeroDotZero, AuthProtocol, AuthKey, "", PrivProtocol, PrivKey, "", "", "", ""}
+        {"telecom", UsmUser, UsmUser, zeroDotZero, A, "", "", P, "", "", "", AKey, PKey}
       ]],
     ["./tmp/vacm.conf",
       [
-        {vacmSecurityToGroup, usm, "initial", "initial"},
-        {vacmSecurityToGroup, usm, CommunityWrite, CommunityWrite},
+        {vacmSecurityToGroup, usm, UsmUser, UsmUser},
         {vacmSecurityToGroup, v2c, "initial", "initial"},
         {vacmSecurityToGroup, v2c, CommunityWrite, CommunityWrite},
         {vacmSecurityToGroup, v1, "initial", "initial"},
         {vacmSecurityToGroup, v1, CommunityWrite, CommunityWrite},
-        {vacmAccess, "initial", [], any, noAuthNoPriv, exact, CommunityRead, CommunityWrite, "restricted"},
-        {vacmAccess, "initial", [], usm, authNoPriv, exact, CommunityRead, CommunityWrite, "internet"},
-        {vacmAccess, "initial", [], usm, authPriv, exact, CommunityRead, CommunityWrite, "internet"},
-        {vacmAccess, CommunityWrite, [], any, noAuthNoPriv, exact, CommunityRead, CommunityWrite, "internet"},
-        {vacmViewTreeFamily, "restricted", [1,3,6,1], included, null},
+        {vacmAccess, UsmUser, [], any, AP, exact, "internet", [], "internet"},
         {vacmViewTreeFamily, "internet", [1,3,6,1], included, null}
       ]]
   ],
