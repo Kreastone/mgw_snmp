@@ -54,8 +54,15 @@ test() ->
     {<<"TrapEnable">>, 0},
     {<<"DstIPAddressTrap">>, <<"127.0.0.1">>},
     {<<"DstPortTrap">>, 5000},
-    {<<"MaxSize">>, 484}
+    {<<"MaxSize">>, 484},
+    {<<"UsmUser">>, <<"initial">>},
+    {<<"AuthProtocol">>, <<"usmNoAuthProtocol">>},
+    {<<"AuthKey">>, <<"">>},
+    {<<"PrivProtocol">>, <<"usmNoPrivProtocol">>},
+    {<<"PrivKey">>, <<"">>},
+    {<<"ContextName">>, <<"">>}
   ],
+
   io:format("create list~n"),
   case create_file_config(List_Config) of
     ok ->
@@ -130,13 +137,11 @@ handle_call([get_list_index, Table_Path], _From, State) ->
     true ->
       List_Indexes = get_list_index_all(Table_Path, []),
       {reply, List_Indexes,
-        #state{
-          status_task = State#state.status_task,
-          last_save_update = State#state.last_save_update,
-          buffer = State#state.buffer,
+        State#state{
           time_update = erlang:now(),
           list_indexes = List_Indexes,
-          name_table = Table_Path}}
+          name_table = Table_Path
+        }}
   end;
 handle_call(hibernate, _From, State) ->
   {reply, ok, State, hibernate};
@@ -192,14 +197,10 @@ handle_cast([set, Address, Name, Value], State) ->
   Buffer = get_buffer(State#state.buffer, Address, Name, Value),
   Status_Task = handle_status(State#state.status_task),
   {noreply,
-    #state{
-      time_update = State#state.time_update,
-      name_table = State#state.name_table,
-      list_indexes = State#state.list_indexes,
+    State#state{
       status_task = Status_Task,
       last_save_update = erlang:now(),
-      buffer = Buffer
-    }};
+      buffer = Buffer}};
 handle_cast(save, State) ->
   Diff_Time = timer:now_diff(erlang:now(), State#state.last_save_update),
   if (Diff_Time < (2000000)) andalso (State#state.status_task == process) ->
@@ -207,14 +208,11 @@ handle_cast(save, State) ->
       {noreply, State};
     true ->
       update_all(State#state.buffer),
-      {noreply, #state{
-        time_update = State#state.time_update,
-        name_table = State#state.name_table,
-        list_indexes = State#state.list_indexes,
-        status_task = ready,
-        last_save_update = {0,0,0},
-        buffer = []
-      }}
+      {noreply,
+        State#state{
+          status_task = ready,
+          last_save_update = {0,0,0},
+          buffer = []}}
   end;
 handle_cast(_Request, State) ->
   {noreply, State}.
@@ -381,6 +379,13 @@ create_file_config(List_Config) ->
   CommunityTrap = binary_to_list(proplists:get_value(<<"CommunityTrap">>, List_Config)),
   ListDstIPTrap = binary_to_list(proplists:get_value(<<"DstIPAddressTrap">>, List_Config)),
   DstPortTrap = proplists:get_value(<<"DstPortTrap">>, List_Config),
+  UsmUser = binary_to_list(proplists:get_value(<<"UsmUser">>, List_Config)),
+  AuthProtocol = list_to_atom(binary_to_list(proplists:get_value(<<"AuthProtocol">>, List_Config))),
+  AuthKey = binary_to_list(proplists:get_value(<<"AuthKey">>, List_Config)),
+  PrivProtocol = list_to_atom(binary_to_list(proplists:get_value(<<"PrivProtocol">>, List_Config))),
+  PrivKey = binary_to_list(proplists:get_value(<<"PrivProtocol">>, List_Config)),
+  ContextName = binary_to_list(proplists:get_value(<<"ContextName">>, List_Config)),
+
   {ok, DstIPTrap} = inet:parse_address(ListDstIPTrap),
 
   Table_Files = [
@@ -399,7 +404,7 @@ create_file_config(List_Config) ->
       ]],
     ["./tmp/context.conf",
       [
-        ""
+        ContextName
       ]],
     ["./tmp/notify.conf",
       [
@@ -431,9 +436,7 @@ create_file_config(List_Config) ->
       ]],
     ["./tmp/usm.conf",
       [
-        {"kreastone", "initial", "initial", zeroDotZero, usmHMACMD5AuthProtocol, "", "", usmNoPrivProtocol, "", "", "", [43,128,9,152,77,92,193,86,26,72,57,79,14,206,89,20], ""},
-        {"kreastone", "templateMD5", "templateMD5", zeroDotZero, usmHMACMD5AuthProtocol, "", "", usmNoPrivProtocol, "", "", "", [43,128,9,152,77,92,193,86,26,72,57,79,14,206,89,20], ""},
-        {"kreastone", "templateSHA", "templateSHA", zeroDotZero, usmHMACSHAAuthProtocol, "", "", usmNoPrivProtocol, "", "", "", [17,89,83,210,234,116,161,91,245,239,85,115,253,102,158,149,223,162,49,220], ""}
+        {"kreastone", UsmUser, UsmUser, zeroDotZero, AuthProtocol, AuthKey, "", PrivProtocol, PrivKey, "", "", "", ""}
       ]],
     ["./tmp/vacm.conf",
       [
@@ -443,10 +446,10 @@ create_file_config(List_Config) ->
         {vacmSecurityToGroup, v2c, CommunityWrite, CommunityWrite},
         {vacmSecurityToGroup, v1, "initial", "initial"},
         {vacmSecurityToGroup, v1, CommunityWrite, CommunityWrite},
-        {vacmAccess, "initial", [], any, noAuthNoPriv, exact, "restricted", [], "restricted"},
-        {vacmAccess, "initial", [], usm, authNoPriv, exact, "internet", "internet", "internet"},
-        {vacmAccess, "initial", [], usm, authPriv, exact, "internet", "internet", "internet"},
-        {vacmAccess, CommunityWrite, [], any, noAuthNoPriv, exact, "internet", "internet", "internet"},
+        {vacmAccess, "initial", [], any, noAuthNoPriv, exact, CommunityRead, CommunityWrite, "restricted"},
+        {vacmAccess, "initial", [], usm, authNoPriv, exact, CommunityRead, CommunityWrite, "internet"},
+        {vacmAccess, "initial", [], usm, authPriv, exact, CommunityRead, CommunityWrite, "internet"},
+        {vacmAccess, CommunityWrite, [], any, noAuthNoPriv, exact, CommunityRead, CommunityWrite, "internet"},
         {vacmViewTreeFamily, "restricted", [1,3,6,1], included, null},
         {vacmViewTreeFamily, "internet", [1,3,6,1], included, null}
       ]]
