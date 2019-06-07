@@ -44,14 +44,15 @@
 
 test() ->
   List_Config = [
-    {<<"Version1">>, 1},
-    {<<"Version2">>, 1},
-    {<<"Version3">>, 1},
+    {<<"SnmpEnable">>, true},
+    {<<"Version1">>, true},
+    {<<"Version2">>, true},
+    {<<"Version3">>, true},
     {<<"CommunityRead">>, <<"public">>},
     {<<"CommunityWrite">>, <<"all-rights">>},
     {<<"CommunityTrap">>, <<"private">>},
     {<<"Port">>, 4000},
-    {<<"TrapEnable">>, 0},
+    {<<"TrapEnable">>, false},
     {<<"DstIPAddressTrap">>, <<"127.0.0.1">>},
     {<<"DstPortTrap">>, 5000},
     {<<"MaxSize">>, 484},
@@ -393,7 +394,7 @@ create_file_config(List_Config) ->
       {<<"auth no priv">>, <<"sha">>, _} -> {authNoPriv, usmHMACSHAAuthProtocol, snmp_usm:passwd2localized(sha, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
       {<<"auth priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized(md5, "telecom", PrivKeyString)};
       {<<"auth priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized(md5, "telecom", PrivKeyString)};
-      {_, _, _, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
+      _ -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
     end,
 
   {ok, DstIPTrap} = inet:parse_address(ListDstIPTrap),
