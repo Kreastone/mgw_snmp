@@ -14,6 +14,7 @@
 
 %% API
 -export([start_link/0]).
+-export([apply_setting/0]).
 -export([start_listen/0, stop_listen/0]).
 -export([test/0]).
 
@@ -41,6 +42,10 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+apply_setting() ->
+    snmp:stop(),
+
 
 test() ->
   List_Config = [
@@ -297,25 +302,30 @@ start() ->
       end,
   List_Config = access_tables:fold(Address, F, []),
 
-  case create_file_config(List_Config) of
-    ok -> start_snmp(List_Config);
-    Error ->  Error
+  case proplists:get_value(<<"SnmpEnable">>, List_Config) of
+    true ->
+      case create_file_config(List_Config) of
+        ok -> start_snmp(List_Config);
+        Error ->  Error
+      end;
+    _ ->
+      ok
   end.
 
 start_snmp(List_Config) ->
   V1 =
     case proplists:get_value(<<"Version1">>, List_Config) of
-      1 -> [v1];
+      true -> [v1];
       _ -> []
     end,
   V2 =
     case proplists:get_value(<<"Version2">>, List_Config) of
-      1 -> [v2];
+      true -> [v2];
       _ -> []
     end,
   V3 =
     case proplists:get_value(<<"Version3">>, List_Config) of
-      1 -> [v3];
+      true -> [v3];
       _ -> []
     end,
 
