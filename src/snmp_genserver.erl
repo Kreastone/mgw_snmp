@@ -45,7 +45,7 @@
 
 apply_setting() ->
     snmp:stop(),
-
+    start_listen().
 
 test() ->
   List_Config = [
