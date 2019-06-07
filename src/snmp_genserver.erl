@@ -404,8 +404,8 @@ create_file_config(List_Config) ->
       {<<"no auth no priv">>, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""};
       {<<"auth no priv">>, <<"md5">>, _} -> {authNoPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
       {<<"auth no priv">>, <<"sha">>, _} -> {authNoPriv, usmHMACSHAAuthProtocol, snmp_usm:passwd2localized_key(sha, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
-      {<<"auth priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, "telecom", PrivKeyString)};
-      {<<"auth priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, "telecom", PrivKeyString)};
+      {<<"auth priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
+      {<<"auth priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
       _ -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
     end,
 
