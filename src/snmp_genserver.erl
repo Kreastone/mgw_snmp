@@ -96,6 +96,8 @@ start_listen() ->
       Priv = code:priv_dir(mgw_snmp),
       snmpa:load_mib(Priv ++ "/MINI-MGW"),
       snmpa:load_mib(Priv ++ "/MINI-MGW-SIP");
+    not_start ->
+      [];
     {error, Reason} ->
       io:format("error: ~p~n", [Reason])
   end.
@@ -309,7 +311,7 @@ start() ->
         Error ->  Error
       end;
     _ ->
-      ok
+      not_start
   end.
 
 start_snmp(List_Config) ->
