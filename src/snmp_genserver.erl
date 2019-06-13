@@ -69,11 +69,12 @@ test() ->
     {<<"PrivKey">>, <<"">>}
   ],
 
+
   io:format("create list~n"),
   case create_file_config(List_Config) of
     ok ->
       io:format("create files config: ok~n"),
-      Res = start_snmp(List_Config),
+      Res = start_snmp([v1,v2,v3]),
       io:format("start snmp: ~p~n", [Res]),
       Priv = code:priv_dir(mgw_snmp),
       snmpa:load_mib(Priv ++ "/MINI-MGW"),
@@ -88,11 +89,6 @@ test() ->
 start_listen() ->
   case start() of
     ok ->
-%%      Priv = code:priv_dir(mgw_snmp),
-%%      case filelib:is_file("MINI-MGW.bin") of
-%%        true -> ok;
-%%        false -> snmpc:compile(Priv ++ "/MINI-MGW")
-%%      end,
       Priv = code:priv_dir(mgw_snmp),
       snmpa:load_mib(Priv ++ "/MINI-MGW"),
       snmpa:load_mib(Priv ++ "/MINI-MGW-SIP");
@@ -303,37 +299,31 @@ start() ->
     AccIn ++ [{Elem#parameter.name, Elem#parameter.value}]
       end,
   List_Config = access_tables:fold(Address, F, []),
+  V1 = case proplists:get_value(<<"Version1">>, List_Config) of
+      true -> [v1];
+      _ -> [] end,
+  V2 = case proplists:get_value(<<"Version2">>, List_Config) of
+      true -> [v2];
+      _ -> [] end,
+  V3 = case proplists:get_value(<<"Version3">>, List_Config) of
+      true -> [v3];
+      _ -> [] end,
+  Versions = V1 ++ V2 ++ V3,
+  SnmpEnable = proplists:get_value(<<"SnmpEnable">>, List_Config),
 
-  case proplists:get_value(<<"SnmpEnable">>, List_Config) of
-    true ->
+  if (Versions /= []) andalso (SnmpEnable == true) ->
       case create_file_config(List_Config) of
-        ok -> start_snmp(List_Config);
+        ok -> start_snmp(Versions);
         Error ->  Error
       end;
-    _ ->
+    true ->
       not_start
   end.
 
-start_snmp(List_Config) ->
-  V1 =
-    case proplists:get_value(<<"Version1">>, List_Config) of
-      true -> [v1];
-      _ -> []
-    end,
-  V2 =
-    case proplists:get_value(<<"Version2">>, List_Config) of
-      true -> [v2];
-      _ -> []
-    end,
-  V3 =
-    case proplists:get_value(<<"Version3">>, List_Config) of
-      true -> [v3];
-      _ -> []
-    end,
-
+start_snmp(Versions) ->
   Config = [
     {priority, normal},
-    {versions, V1 ++ V2 ++ V3},
+    {versions, Versions},
     {db_dir, ""},
     {db_init_error, true},
     {mib_storage, [{module,snmpa_mib_storage_ets}]},
@@ -383,8 +373,12 @@ delete_file([FileName|Table]) ->
   delete_file(Table).
 
 create_file_config(List_Config) ->
+
+  io:format("List_Config: ~p~n", [List_Config]),
+
   file:make_dir("tmp"),
 
+  V3 = proplists:get_value(<<"Version3">>, List_Config),
   Port = proplists:get_value(<<"Port">>, List_Config),
   MaxSize = proplists:get_value(<<"MaxSize">>, List_Config),
   CommunityRead = binary_to_list(proplists:get_value(<<"CommunityRead">>, List_Config)),
@@ -400,12 +394,13 @@ create_file_config(List_Config) ->
   PrivKeyString = binary_to_list(proplists:get_value(<<"PrivKey">>, List_Config)),
 
   {AP, A, AKey, P, PKey} =
-    case {AuthPriv, AuthProtocol, PrivProtocol} of
-      {<<"no auth no priv">>, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""};
-      {<<"auth no priv">>, <<"md5">>, _} -> {authNoPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
-      {<<"auth no priv">>, <<"sha">>, _} -> {authNoPriv, usmHMACSHAAuthProtocol, snmp_usm:passwd2localized_key(sha, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
-      {<<"auth priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
-      {<<"auth priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
+    case {V3, AuthPriv, AuthProtocol, PrivProtocol} of
+      {false, _, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""};
+      {_, <<"no auth no priv">>, _, _} -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""};
+      {_, <<"auth no priv">>, <<"md5">>, _} -> {authNoPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
+      {_, <<"auth no priv">>, <<"sha">>, _} -> {authNoPriv, usmHMACSHAAuthProtocol, snmp_usm:passwd2localized_key(sha, AuthKeyString, "telecom"), usmNoPrivProtocol, ""};
+      {_, <<"auth priv">>, <<"md5">>, <<"des">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
+      {_,<<"auth priv">>, <<"md5">>, <<"aes">>} -> {authPriv, usmHMACMD5AuthProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom"), usmDESPrivProtocol, snmp_usm:passwd2localized_key(md5, PrivKeyString, "telecom")};
       _ -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
     end,
 
