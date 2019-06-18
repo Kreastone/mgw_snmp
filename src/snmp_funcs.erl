@@ -9,7 +9,7 @@
 -module(snmp_funcs).
 -author("kreastone").
 
--include_lib("../mgw_config/include/types.hrl").
+-include("../mgw_config/include/types.hrl").
 
 %% API
 -export([handle_value/2, handle_value/3]).

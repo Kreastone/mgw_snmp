@@ -10,7 +10,7 @@
 -author("kreastone").
 -behaviour(gen_server).
 
--include_lib("../mgw_config/include/types.hrl").
+-include("../mgw_config/include/types.hrl").
 
 %% API
 -export([start_link/0]).
