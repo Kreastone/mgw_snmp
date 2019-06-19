@@ -373,9 +373,6 @@ delete_file([FileName|Table]) ->
   delete_file(Table).
 
 create_file_config(List_Config) ->
-
-  io:format("List_Config: ~p~n", [List_Config]),
-
   file:make_dir("tmp"),
 
   V3 = proplists:get_value(<<"Version3">>, List_Config),
