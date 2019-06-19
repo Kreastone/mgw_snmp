@@ -1,0 +1,1 @@
+copy  ..\mgw_config\include\types.hrl include\types.hrl
