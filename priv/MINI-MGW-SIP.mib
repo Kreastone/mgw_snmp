@@ -17,6 +17,7 @@ Boolean ::= INTEGER { true (1), false (0) }
 npoTelecom              	OBJECT IDENTIFIER ::= { enterprises 40248 }
 minimgw                 	OBJECT IDENTIFIER ::= { npoTelecom 5 }
 services   					OBJECT IDENTIFIER ::= { minimgw 2 }
+minimgwServiceTraps   		OBJECT IDENTIFIER ::= { minimgw 11 }
 voiceService   				OBJECT IDENTIFIER ::= { services 1 }
 
 ------------------------------------------------
@@ -2513,5 +2514,23 @@ phyInterfacePhoneConnectivity OBJECT-TYPE
     ::= { entriesPhyInterface 7 }
 	
 ------------------------------------------------
-	
+
+npoTelecomMgwServiceChangeServer TRAP-TYPE
+    ENTERPRISE  minimgwServiceTraps
+    VARIABLES   { voiceProfileSIPProxyServer }
+    DESCRIPTION
+        "This trap is sent when change VoIP Server."
+    ::= 1
+
+------------------------------------------------
+
+npoTelecomMgwServiceChangeStatusLine TRAP-TYPE
+    ENTERPRISE  minimgwServiceTraps
+    VARIABLES   { voiceProfileLineIndex, voiceProfileLineStatus }
+    DESCRIPTION
+        "This trap is sent when change status line."
+    ::= 2
+
+------------------------------------------------
+
 END

@@ -17,6 +17,7 @@ Boolean ::= INTEGER { true (1), false (0) }
 npoTelecom              OBJECT IDENTIFIER ::= { enterprises 40248 }
 minimgw                 OBJECT IDENTIFIER ::= { npoTelecom 5 }
 internetGatewayDevice   OBJECT IDENTIFIER ::= { minimgw 1 }
+minimgwTraps            OBJECT IDENTIFIER ::= { minimgw 10 }
 
 ------------------------------------------------
 
@@ -5006,6 +5007,42 @@ wanPPPConnectionPortMappingRemoveEntry OBJECT-TYPE
        "Write any number to remove the entry from this table."
    ::= { entriesWANPPPConnectionPortMapping 11 }
    
+------------------------------------------------
+
+npoTelecomMgwCriticalTemp TRAP-TYPE
+  ENTERPRISE  minimgwTraps
+  VARIABLES   { temperatureSensorValue }
+  DESCRIPTION
+              "This trap is sent alarm critical temp of sensor."
+  ::= 1
+
+------------------------------------------------
+
+npoTelecomMgwEndCriticalTemp TRAP-TYPE
+  ENTERPRISE  minimgwTraps
+  VARIABLES   { temperatureSensorValue }
+  DESCRIPTION
+              "This trap is sent end alarm critical temp of sensor."
+  ::= 2
+
+------------------------------------------------
+
+npoTelecomMgwChangeStatusLinkLan TRAP-TYPE
+  ENTERPRISE  minimgwTraps
+  VARIABLES   { lanEthernetInterfaceName, lanEthernetInterfaceStatus }
+  DESCRIPTION
+              "This trap is sent when change status link port Lan Device."
+  ::= 3
+
+------------------------------------------------
+
+npoTelecomMgwChangeStatusLinkWan TRAP-TYPE
+  ENTERPRISE  minimgwTraps
+  VARIABLES   { wanEthernetInterfaceConfigStatus }
+  DESCRIPTION
+              "This trap is sent when change status link port Wan Device."
+  ::= 4
+
 ------------------------------------------------
 
 END

@@ -1,11 +1,4 @@
 %%%-------------------------------------------------------------------
-%%% @author root
-%%% @copyright (C) 2019, <COMPANY>
-%%% @doc
-%%%
-%%% @end
-%%% Created : 17. Янв. 2019 16:14
-%%%-------------------------------------------------------------------
 -module(snmp_genserver).
 -author("kreastone").
 -behaviour(gen_server).
@@ -44,8 +37,8 @@
 %%%===================================================================
 
 apply_setting() ->
-    snmp:stop(),
-    start_listen().
+  snmp:stop(),
+  start_listen().
 
 test() ->
   List_Config = [
@@ -56,17 +49,16 @@ test() ->
     {<<"CommunityRead">>, <<"public">>},
     {<<"CommunityWrite">>, <<"all-rights">>},
     {<<"CommunityTrap">>, <<"private">>},
-    {<<"Port">>, 4000},
+    {<<"Port">>, 162},
     {<<"TrapEnable">>, false},
-    {<<"DstIPAddressTrap">>, <<"127.0.0.1">>},
-    {<<"DstPortTrap">>, 5000},
+    {<<"DstAddressTrap">>, <<"192.168.0.83:162/192.168.0.22:162">>},
     {<<"MaxSize">>, 484},
     {<<"UsmUser">>, <<"initial">>},
     {<<"AuthPriv">>, <<"no auth no priv">>}, %% no auth no priv | auth no priv | auth priv
     {<<"AuthProtocol">>, <<"md5">>},  %% md5 | sha
-    {<<"AuthKey">>, <<"">>},
+    {<<"AuthKey">>, <<"12345678">>},
     {<<"PrivProtocol">>, <<"des">>},  %% des | aes
-    {<<"PrivKey">>, <<"">>}
+    {<<"PrivKey">>, <<"12345678">>}
   ],
 
 
@@ -82,7 +74,7 @@ test() ->
       io:format("community read: public~n"),
       io:format("community write: all-right~n"),
       io:format("port: 4000~n");
-  Error ->
+    Error ->
       io:format("create files config: error, ~p~n", [Error])
   end.
 
@@ -208,8 +200,8 @@ handle_cast([set, Address, Name, Value], State) ->
 handle_cast(save, State) ->
   Diff_Time = timer:now_diff(erlang:now(), State#state.last_save_update),
   if (Diff_Time < (2000000)) andalso (State#state.status_task == process) ->
-      process_wait_save(),
-      {noreply, State};
+    process_wait_save(),
+    {noreply, State};
     true ->
       update_all(State#state.buffer),
       {noreply,
@@ -270,8 +262,8 @@ handle_status(Status) ->
 
 process_wait_save() ->
   F = fun() ->
-        timer:sleep(?TIMEOUT_SAVE),
-        gen_server:cast(snmp_genserver, save)
+    timer:sleep(?TIMEOUT_SAVE),
+    gen_server:cast(snmp_genserver, save)
       end,
   erlang:spawn(F).
 
@@ -279,10 +271,10 @@ update_all([]) ->
   ok;
 update_all([{Address, Table_Name_Value}|Table]) ->
   F = fun(Elem) ->
-        case proplists:get_value(Elem#parameter.name, Table_Name_Value) of
-          undefined -> [];
-          Value -> Elem#parameter{value = Value}
-        end
+    case proplists:get_value(Elem#parameter.name, Table_Name_Value) of
+      undefined -> [];
+      Value -> Elem#parameter{value = Value}
+    end
       end,
   access_tables:update(Address, F),
   update_all(Table).
@@ -300,22 +292,22 @@ start() ->
       end,
   List_Config = access_tables:fold(Address, F, []),
   V1 = case proplists:get_value(<<"Version1">>, List_Config) of
-      true -> [v1];
-      _ -> [] end,
+         true -> [v1];
+         _ -> [] end,
   V2 = case proplists:get_value(<<"Version2">>, List_Config) of
-      true -> [v2];
-      _ -> [] end,
+         true -> [v2];
+         _ -> [] end,
   V3 = case proplists:get_value(<<"Version3">>, List_Config) of
-      true -> [v3];
-      _ -> [] end,
+         true -> [v3];
+         _ -> [] end,
   Versions = V1 ++ V2 ++ V3,
   SnmpEnable = proplists:get_value(<<"SnmpEnable">>, List_Config),
 
   if (Versions /= []) andalso (SnmpEnable == true) ->
-      case create_file_config(List_Config) of
-        ok -> start_snmp(Versions);
-        Error ->  Error
-      end;
+    case create_file_config(List_Config) of
+      ok -> start_snmp(Versions);
+      Error ->  Error
+    end;
     true ->
       not_start
   end.
@@ -345,6 +337,8 @@ start_snmp(Versions) ->
   case snmp:start() of
     ok ->
       delete_config_files(),
+%%      Посылай тестовый трап coldStart
+      snmp_trap:coldStart(),
       ok;
     Error ->
       delete_config_files(),
@@ -381,8 +375,8 @@ create_file_config(List_Config) ->
   CommunityRead = binary_to_list(proplists:get_value(<<"CommunityRead">>, List_Config)),
   CommunityWrite = binary_to_list(proplists:get_value(<<"CommunityWrite">>, List_Config)),
   CommunityTrap = binary_to_list(proplists:get_value(<<"CommunityTrap">>, List_Config)),
-  ListDstIPTrap = binary_to_list(proplists:get_value(<<"DstIPAddressTrap">>, List_Config)),
-  DstPortTrap = proplists:get_value(<<"DstPortTrap">>, List_Config),
+  ListDstTrap = proplists:get_value(<<"DstAddressTrap">>, List_Config),
+
   UsmUser = binary_to_list(proplists:get_value(<<"UsmUser">>, List_Config)),
   AuthPriv = proplists:get_value(<<"AuthPriv">>, List_Config),
   AuthProtocol = proplists:get_value(<<"AuthProtocol">>, List_Config),
@@ -401,7 +395,8 @@ create_file_config(List_Config) ->
       _ -> {noAuthNoPriv, usmNoAuthProtocol, "", usmNoPrivProtocol, ""}
     end,
 
-  {ok, DstIPTrap} = inet:parse_address(ListDstIPTrap),
+  Target_addr = get_target_addr(ListDstTrap),
+  io:format("Target_addr: ~p~n", [Target_addr]),
 
   Table_Files = [
     ["./tmp/agent.conf",
@@ -423,7 +418,8 @@ create_file_config(List_Config) ->
       ]],
     ["./tmp/notify.conf",
       [
-        {"standard trap", "std_trap", trap}
+        {"standard trap", "std_trap", trap},
+        {"standard inform", "std_inform", inform}
       ]],
     ["./tmp/standard.conf",
       [
@@ -436,19 +432,23 @@ create_file_config(List_Config) ->
         {sysName, "mini-mgw"}
       ]],
     ["./tmp/target_addr.conf",
-      [
-        {"v3", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v3", "", [], 2048},
-        {"v3.3", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_inform", "target_v3", "mgrEngine", [], 2048},
-        {"v2", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v2", "", [], 2048},
-        {"v2.2", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_inform", "target_v2", "", [], 2048},
-        {"v1", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v1", "", [], 2048}
-      ]],
+      Target_addr
+%%      [
+%%        {"v3", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v3", "", [], 2048},
+%%        {"v3.3", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_inform", "target_v3", "mgrEngine", [], 2048},
+%%        {"v2", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v2", "", [], 2048},
+%%        {"v2.2", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_inform", "target_v2", "", [], 2048},
+%%        {"v1", snmpUDPDomain, {tuple_to_list(DstIPTrap),DstPortTrap}, 1500, 3, "std_trap", "target_v1", "", [], 2048}
+%%        {"v1", snmpUDPDomain, {[192,168,0,83],5000}, 1500, 3, "std_trap", "target_v1", "", [], 2048}
+%%      ]
+    ],
     ["./tmp/target_params.conf",
       [
         {"target_v1", v1, v1, "initial", noAuthNoPriv},
         {"target_v2", v2c, v2c, "initial", noAuthNoPriv},
         {"target_v3", v3, usm, "initial", noAuthNoPriv}
       ]],
+
     ["./tmp/usm.conf",
       [
         {"telecom", UsmUser, UsmUser, zeroDotZero, A, "", "", P, "", "", "", AKey, PKey}
@@ -465,6 +465,23 @@ create_file_config(List_Config) ->
       ]]
   ],
   handle_table_file(Table_Files).
+
+get_target_addr(<<"">>) -> [];
+get_target_addr(RawAddrs) ->
+  io:format("RawAddrs: ~p~n", [RawAddrs]),
+  ListAddr = binary:split(RawAddrs, [<<"/">>], [global]),
+  get_target_addr(ListAddr, []).
+get_target_addr([], Acc) ->
+  Acc;
+get_target_addr([Addr|ListAddr], Acc) ->
+  FormatAddr = format_addr(Addr),
+  Target_Addr = {binary_to_list(Addr) ++ "v1", snmpUDPDomain, FormatAddr, 1500, 3, "std_trap", "target_v1", "", [], 2048},
+  get_target_addr(ListAddr, Acc ++ [Target_Addr]).
+format_addr(RawAddr) ->
+  io:format("RawAddr: ~p~n", [RawAddr]),
+  [Addr, Port] = binary:split(RawAddr, [<<":">>], [global]),
+  {ok, DstIPTrap} = inet:parse_address(binary_to_list(Addr)),
+  {tuple_to_list(DstIPTrap), binary_to_integer(Port)}.
 
 handle_table_file([]) ->
   ok;

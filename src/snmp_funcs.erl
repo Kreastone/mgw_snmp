@@ -17,6 +17,7 @@
 -export([add_new_entry/3]).
 %%
 -export([get_field/1, delete_object/1, create_object/1]).
+-export([parse_field/1]).
 
 %%----------------------------------------------------------------
 %% Instrumentation function for variables.
